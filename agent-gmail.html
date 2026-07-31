@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Deploy GNG Corporation's Gmail AI Agent to automatically classify incoming emails, draft contextual replies, and follow up with leads.">
+  <title>Gmail Inbox AI Automation Agent | GNG Corporation</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="container">
+      <a href="index.html" class="logo">GNG<span>Corporation</span><span class="logo-dot"></span></a>
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="agents.html" class="nav-link">AI Agents</a></li>
+          <li><a href="packages.html" class="nav-link">Web Packages</a></li>
+          <li><a href="portfolio.html" class="nav-link">Portfolio</a></li>
+          <li><a href="about.html" class="nav-link">About</a></li>
+          <li><a href="contact.html" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+      <a href="contact.html?service=gmail-agent" class="btn btn-primary btn-sm nav-cta">Get Started</a>
+      <button class="menu-toggle" aria-label="Toggle Navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MOBILE OVERLAY MENU -->
+  <div class="mobile-nav">
+    <ul class="mobile-nav-list">
+      <li><a href="index.html" class="mobile-nav-link">Home</a></li>
+      <li><a href="agents.html" class="mobile-nav-link">AI Agents</a></li>
+      <li><a href="packages.html" class="mobile-nav-link">Web Packages</a></li>
+      <li><a href="portfolio.html" class="mobile-nav-link">Portfolio</a></li>
+      <li><a href="about.html" class="mobile-nav-link">About</a></li>
+      <li><a href="contact.html" class="mobile-nav-link">Contact</a></li>
+    </ul>
+    <a href="contact.html?service=gmail-agent" class="btn btn-primary btn-lg" style="margin-top: 1.5rem;">Get Started</a>
+  </div>
+
+  <!-- HERO / PROBLEM SECTION -->
+  <section class="section section-secondary" style="padding-top: 10rem; padding-bottom: 6rem;">
+    <div class="container">
+      <div class="grid grid-2 align-center">
+        <div class="reveal">
+          <span class="section-subtitle">THE PROBLEM</span>
+          <h1 style="font-size: 3rem; line-height: 1.1; margin-bottom: 1.5rem;">Your inbox is a graveyard of opportunities.</h1>
+          <p style="margin-bottom: 2rem; font-size: 1.1rem; line-height: 1.7;">
+            Key clients get buried under spam, support tickets, and newsletters. Important sales pipelines cool down because follow-ups take 24-48 hours. Human operators spend hours reading repetitive messages and writing the same standard replies.
+          </p>
+          <a href="#solution" class="btn btn-secondary">Explore Gmail Agent</a>
+        </div>
+        <div class="reveal reveal-right text-center">
+          <!-- Visual representation of Gmail layout -->
+          <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 2rem; max-width: 400px; margin: 0 auto; text-align: left; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; display: flex; justify-content: space-between;">
+              <span>INBOX CLASSIFIER</span>
+              <span style="color: var(--accent-secondary);">ACTIVE</span>
+            </div>
+            
+            <!-- Email Item 1 -->
+            <div style="background-color: rgba(255,255,255,0.02); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.75rem; border-left: 3px solid var(--accent-color); font-size: 0.8rem;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                <strong style="color: var(--text-primary);">Acme Corp Lead</strong>
+                <span style="color: var(--accent-color); font-weight: 600;">[High Priority]</span>
+              </div>
+              <div style="color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">"Interested in deploying 40 custom workstations..."</div>
+              <div style="margin-top: 0.5rem; font-size: 0.7rem; color: var(--accent-secondary);">✔ Reply draft created & saved in Drafts</div>
+            </div>
+
+            <!-- Email Item 2 -->
+            <div style="background-color: rgba(255,255,255,0.02); padding: 0.75rem; border-radius: 8px; border-left: 3px solid var(--text-muted); font-size: 0.8rem; opacity: 0.6;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                <strong>Weekly Newsletter</strong>
+                <span>[Auto-Archive]</span>
+              </div>
+              <div style="color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">"The state of tech design trends in 2026..."</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUTION SECTION -->
+  <section class="section" id="solution">
+    <div class="container">
+      <div class="section-title-wrapper text-center reveal">
+        <span class="section-subtitle">THE SOLUTION</span>
+        <h2 class="section-title">Automated Email Triaging</h2>
+        <p class="section-description">
+          An autonomous mail workflow engine that processes, categorizes, drafts, and archives incoming mail.
+        </p>
+      </div>
+
+      <div class="grid grid-3">
+        <div class="card reveal delay-100">
+          <h4 style="margin-bottom: 0.75rem;">Intent Classification</h4>
+          <p style="font-size: 0.9rem;">
+            Scans incoming payloads and sorts them into High Priority, FAQ support, Partnership, or Spam using prompt-engineered classifications.
+          </p>
+        </div>
+        <div class="card reveal delay-200">
+          <h4 style="margin-bottom: 0.75rem;">Draft Preparation</h4>
+          <p style="font-size: 0.9rem;">
+            Generates polished responses in your brand's unique tone and saves them directly in your "Drafts" folder for quick human-approval sending.
+          </p>
+        </div>
+        <div class="card reveal delay-300">
+          <h4 style="margin-bottom: 0.75rem;">Persistent Follow-Ups</h4>
+          <p style="font-size: 0.9rem;">
+            Tracks unanswered inquiries and triggers gentle, context-aware follow-ups after 3, 5, or 10 days to keep your pipeline warm.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->
+  <section class="section section-secondary">
+    <div class="container">
+      <div class="section-title-wrapper text-center reveal">
+        <span class="section-subtitle">Technical Details</span>
+        <h2 class="section-title">Industrial Security Architecture</h2>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="flex reveal reveal-left" style="gap: 1.5rem; margin-bottom: 2rem;">
+          <div style="font-size: 1.5rem; color: var(--accent-color); font-weight: 800;">01</div>
+          <div>
+            <h4 style="margin-bottom: 0.5rem;">OAuth 2.0 Tokenization</h4>
+            <p style="font-size: 0.95rem;">GNG never receives your password. All mail operations rely on scoped OAuth authentication protocol keys managed in private clouds.</p>
+          </div>
+        </div>
+        <div class="flex reveal reveal-right" style="gap: 1.5rem; margin-bottom: 2rem;">
+          <div style="font-size: 1.5rem; color: var(--accent-color); font-weight: 800;">02</div>
+          <div>
+            <h4 style="margin-bottom: 0.5rem;">Semantic Guardrails</h4>
+            <p style="font-size: 0.95rem;">Context boundaries prevent hallucinated statistics, pricing claims, or compliance issues by validating drafts against your knowledge wiki.</p>
+          </div>
+        </div>
+        <div class="flex reveal reveal-left" style="gap: 1.5rem; margin-bottom: 2rem;">
+          <div style="font-size: 1.5rem; color: var(--accent-color); font-weight: 800;">03</div>
+          <div>
+            <h4 style="margin-bottom: 0.5rem;">Multilingual Support</h4>
+            <p style="font-size: 0.95rem;">Intelligently processes and responds in over 30 languages, translating payloads internally while keeping output grammar clean.</p>
+          </div>
+        </div>
+        <div class="flex reveal reveal-right" style="gap: 1.5rem; margin-bottom: 2rem;">
+          <div style="font-size: 1.5rem; color: var(--accent-color); font-weight: 800;">04</div>
+          <div>
+            <h4 style="margin-bottom: 0.5rem;">Telemetry Dashboards</h4>
+            <p style="font-size: 0.95rem;">Track response speed metrics, active ticket volumes, token costs, and automation success percentage in real-time dashboards.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING TIERS -->
+  <section class="section">
+    <div class="container">
+      <div class="section-title-wrapper text-center reveal">
+        <span class="section-subtitle">PRICING PLANS</span>
+        <h2 class="section-title">Transparent Operations Costs</h2>
+      </div>
+
+      <div class="grid grid-3">
+        <!-- Starter Tier -->
+        <div class="card reveal delay-100" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin-bottom: 0.5rem;">Inbox Starter</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">For executives and founders.</p>
+            <div style="font-size: 2.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 2rem;">$399 <span style="font-size: 0.9rem; font-weight: 400; color: var(--text-muted);">/ month</span></div>
+            <ul style="list-style: none; color: var(--text-muted); line-height: 2.2; margin-bottom: 2rem; font-size: 0.9rem;">
+              <li>✔ Dynamic label categorization</li>
+              <li>✔ Draft drafting (up to 3 distinct templates)</li>
+              <li>✔ Max 2,000 processed emails/mo</li>
+              <li>✔ Standard API sync (every 10 minutes)</li>
+              <li class="crossmark">✘ Persistent follow-ups module</li>
+            </ul>
+          </div>
+          <a href="contact.html?service=gmail-agent" class="btn btn-secondary" style="width: 100%;">Select Plan</a>
+        </div>
+
+        <!-- Pro Tier (Recommended) -->
+        <div class="card reveal delay-200" style="display: flex; flex-direction: column; justify-content: space-between; border-color: var(--accent-color); box-shadow: 0 0 25px rgba(99,102,241,0.15);">
+          <div>
+            <div style="position: absolute; top: 1.25rem; right: 1.5rem; background-color: var(--accent-color); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 0.25rem 0.75rem; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.05em;">RECOMMENDED</div>
+            <h3 style="margin-bottom: 0.5rem;">Inbox Pro</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">For scaling sales & support teams.</p>
+            <div style="font-size: 2.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 2rem;">$749 <span style="font-size: 0.9rem; font-weight: 400; color: var(--text-muted);">/ month</span></div>
+            <ul style="list-style: none; color: var(--text-muted); line-height: 2.2; margin-bottom: 2rem; font-size: 0.9rem;">
+              <li>✔ Everything in Starter</li>
+              <li>✔ Automated follow-up pipelines</li>
+              <li>✔ PDF/Doc proposal parser mapping</li>
+              <li>✔ Max 10,000 processed emails/mo</li>
+              <li>✔ Real-time API webhook sync</li>
+            </ul>
+          </div>
+          <a href="contact.html?service=gmail-agent" class="btn btn-primary" style="width: 100%;">Select Plan</a>
+        </div>
+
+        <!-- Enterprise Tier -->
+        <div class="card reveal delay-300" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 style="margin-bottom: 0.5rem;">Custom Enterprise</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">For large CRM integrations.</p>
+            <div style="font-size: 2.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 2rem;">Custom <span style="font-size: 0.9rem; font-weight: 400; color: var(--text-muted);">pricing</span></div>
+            <ul style="list-style: none; color: var(--text-muted); line-height: 2.2; margin-bottom: 2rem; font-size: 0.9rem;">
+              <li>✔ Multi-mailbox load balancing</li>
+              <li>✔ Custom fine-tuned company datasets</li>
+              <li>✔ Active database write integrations</li>
+              <li>✔ Unlimited monthly traffic</li>
+              <li>✔ 24/7 technical operations SLA</li>
+            </ul>
+          </div>
+          <a href="contact.html?service=gmail-agent" class="btn btn-secondary" style="width: 100%;">Contact Sales</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="section section-secondary" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+    <div class="container text-center reveal">
+      <h2>Reclaim your focus. Let GNG draft.</h2>
+      <p style="max-width: 600px; margin: 1rem auto 2rem auto;">
+        Discuss your email triaging challenges with our solutions engineers. We will map a custom workspace prototype flow.
+      </p>
+      <a href="contact.html?service=gmail-agent" class="btn btn-primary btn-lg">Get Started</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col brand-col">
+          <a href="index.html" class="logo">GNG<span>Corporation</span><span class="logo-dot"></span></a>
+          <p class="footer-tagline">Architecting AI automation workflows and next-generation immersive web experiences.</p>
+        </div>
+        <div class="footer-col">
+          <h4>AI Solutions</h4>
+          <ul>
+            <li><a href="agent-whatsapp.html">WhatsApp AI Agent</a></li>
+            <li><a href="agent-gmail.html">Gmail Inbox Agent</a></li>
+            <li><a href="agent-youtube.html">YouTube Automation</a></li>
+            <li><a href="agent-sheets.html">Google Sheets Agent</a></li>
+            <li><a href="agent-chatbot.html">General Chatbots</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Web Engineering</h4>
+          <ul>
+            <li><a href="packages.html">Standard Websites</a></li>
+            <li><a href="packages.html">3D Immersive Websites</a></li>
+            <li><a href="packages.html">Pricing Matrix</a></li>
+            <li><a href="portfolio.html">Case Studies</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>GNG Corp</h4>
+          <ul>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Careers (We're hiring)</a></li>
+            <li><a href="contact.html">Contact/Support</a></li>
+            <li><a href="index.html">Legal & Privacy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 GNG Corporation. All rights reserved. Designed in California &amp; Tokyo.</p>
+        <a href="admin.html" class="footer-watermark">Created by Ghazanfar</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/animations.js"></script>
+</body>
+</html>
