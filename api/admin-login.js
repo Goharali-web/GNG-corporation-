@@ -2,14 +2,6 @@ const crypto = require('crypto');
 const { rateLimit } = require('./_rate-limit');
 
 module.exports = async (req, res) => {
-  // Enforce same-origin check for security
-  const origin = req.headers.origin;
-  const host = req.headers.host;
-  
-  if (origin && !origin.includes(host) && !host.includes('localhost')) {
-    return res.status(403).json({ error: 'CORS policy violation: Access Denied.' });
-  }
-
   if (req.method === 'OPTIONS') {
     res.setHeader('Access-Control-Allow-Methods', 'POST,OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
