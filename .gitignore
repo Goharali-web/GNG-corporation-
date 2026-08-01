@@ -20,4 +20,6 @@ dist/
 # Environment Variables
 .env
 .env*.local
+js/config.js
+
 
