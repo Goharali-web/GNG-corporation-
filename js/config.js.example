@@ -1,0 +1,9 @@
+// GNG Corporation - Local Configuration Fallback Template
+// Copy this file to 'config.js' in the same folder and fill in your credentials.
+
+window.GNG_CONFIG = {
+  SUPABASE_URL: "https://your-project-id.supabase.co",
+  SUPABASE_ANON_KEY: "your-supabase-anon-key",
+  ADMIN_EMAIL: "your-admin-email@gmail.com",
+  ADMIN_PASSWORD: "your-admin-password"
+};
