@@ -1,0 +1,11 @@
+# Exclude sensitive files from Vercel deployment uploads
+.env
+.env.local
+.git
+.agents
+README.md
+task.md
+walkthrough.md
+push.bat
+push-to-github.ps1
+pusher.js
