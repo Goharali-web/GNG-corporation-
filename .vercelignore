@@ -9,3 +9,5 @@ walkthrough.md
 push.bat
 push-to-github.ps1
 pusher.js
+js/config.js
+
