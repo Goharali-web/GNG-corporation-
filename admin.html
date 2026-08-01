@@ -493,10 +493,6 @@
   </div>
 
   <script>
-    // Config
-    const SUPABASE_URL = 'https://xneeljogbzldbdzdccdt.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_T-kioo9_PrSyWANCJD0vHQ_wBSYo_z8';
-
     // State
     let bookingsList = [];
 
@@ -533,26 +529,44 @@
     document.addEventListener('DOMContentLoaded', () => {
       const authSession = sessionStorage.getItem('gng_admin_authenticated');
       const savedEmail = sessionStorage.getItem('gng_admin_email');
+      const savedToken = sessionStorage.getItem('gng_admin_token');
       
-      if (authSession === 'true' && savedEmail) {
+      if (authSession === 'true' && savedEmail && savedToken) {
         showDashboard(savedEmail);
       }
     });
 
     // Form submission
-    loginForm.addEventListener('submit', (e) => {
+    loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       loginError.style.display = 'none';
 
       const email = emailInput.value.trim();
       const password = passwordInput.value;
 
-      // Authenticate admin securely against provided credentials
-      if (email === 'ga480926@gmail.com' && password === 'nM^desWM%?19_)gng') {
-        sessionStorage.setItem('gng_admin_authenticated', 'true');
-        sessionStorage.setItem('gng_admin_email', email);
-        showDashboard(email);
-      } else {
+      try {
+        const res = await fetch('/api/admin-login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (!res.ok) {
+          throw new Error('Authentication failed');
+        }
+
+        const data = await res.json();
+        if (data.success && data.token) {
+          sessionStorage.setItem('gng_admin_authenticated', 'true');
+          sessionStorage.setItem('gng_admin_email', email);
+          sessionStorage.setItem('gng_admin_token', data.token);
+          showDashboard(email);
+        } else {
+          throw new Error('Invalid authentication response');
+        }
+      } catch (err) {
         loginError.style.display = 'block';
         passwordInput.value = '';
       }
@@ -562,6 +576,7 @@
     logoutBtn.addEventListener('click', () => {
       sessionStorage.removeItem('gng_admin_authenticated');
       sessionStorage.removeItem('gng_admin_email');
+      sessionStorage.removeItem('gng_admin_token');
       location.reload();
     });
 
@@ -582,33 +597,41 @@
         </tr>
       `;
 
+      const token = sessionStorage.getItem('gng_admin_token');
+      if (!token) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--accent-secondary); padding: 3rem;">
+              Session expired. Please log in again.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
       try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/bookings?select=*&order=created_at.desc`, {
+        const response = await fetch(`/api/get-bookings`, {
           method: 'GET',
           headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`
+            'Authorization': `Bearer ${token}`
           }
         });
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
-          const errMsg = errData.message || `HTTP ${response.status}`;
+          const errMsg = errData.error || `HTTP ${response.status}`;
           throw new Error(errMsg);
         }
 
         bookingsList = await response.json();
-        console.log('Fetched bookings successfully:', bookingsList);
+        console.log('Fetched bookings successfully');
         renderBookings(bookingsList);
       } catch (err) {
         console.error('Fetch Bookings Error:', err);
         tbody.innerHTML = `
           <tr>
-            <td colspan="6" style="text-align: center; color: #ef4444; padding: 3rem;">
-              Failed to load bookings: ${err.message}. <br>
-              <span style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; display: block;">
-                Please verify your Row Level Security (RLS) policies allow anonymous SELECT reads, or check browser console (F12) for network details.
-              </span>
+            <td colspan="6" style="text-align: center; color: var(--accent-secondary); padding: 3rem;">
+              Failed to load data: ${err.message}
             </td>
           </tr>
         `;
@@ -700,12 +723,17 @@
         return;
       }
 
+      const token = sessionStorage.getItem('gng_admin_token');
+      if (!token) {
+        alert('Your session has expired. Please log in again.');
+        return;
+      }
+
       try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/bookings?id=eq.${id}`, {
+        const response = await fetch(`/api/delete-booking?id=${id}`, {
           method: 'DELETE',
           headers: {
-            'apikey': SUPABASE_KEY,
-            'Authorization': `Bearer ${SUPABASE_KEY}`
+            'Authorization': `Bearer ${token}`
           }
         });
 
