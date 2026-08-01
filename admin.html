@@ -492,7 +492,16 @@
     </div>
   </div>
 
+  <script src="js/config.js"></script>
   <script>
+    // ── Environment Detection ──
+    const IS_LOCAL = location.protocol === 'file:' 
+      || location.hostname === 'localhost' 
+      || location.hostname === '127.0.0.1';
+
+    // Local-mode Supabase config (loaded from js/config.js)
+    const LOCAL_CFG = window.GNG_CONFIG || {};
+
     // State
     let bookingsList = [];
 
@@ -529,14 +538,13 @@
     document.addEventListener('DOMContentLoaded', () => {
       const authSession = sessionStorage.getItem('gng_admin_authenticated');
       const savedEmail = sessionStorage.getItem('gng_admin_email');
-      const savedToken = sessionStorage.getItem('gng_admin_token');
       
-      if (authSession === 'true' && savedEmail && savedToken) {
+      if (authSession === 'true' && savedEmail) {
         showDashboard(savedEmail);
       }
     });
 
-    // Form submission
+    // Form submission — dual mode
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       loginError.style.display = 'none';
@@ -544,31 +552,41 @@
       const email = emailInput.value.trim();
       const password = passwordInput.value;
 
-      try {
-        const res = await fetch('/api/admin-login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email, password })
-        });
-
-        if (!res.ok) {
-          throw new Error('Authentication failed');
-        }
-
-        const data = await res.json();
-        if (data.success && data.token) {
+      if (IS_LOCAL) {
+        // ── LOCAL MODE: validate against js/config.js credentials ──
+        if (email === LOCAL_CFG.ADMIN_EMAIL && password === LOCAL_CFG.ADMIN_PASSWORD) {
           sessionStorage.setItem('gng_admin_authenticated', 'true');
           sessionStorage.setItem('gng_admin_email', email);
-          sessionStorage.setItem('gng_admin_token', data.token);
+          sessionStorage.setItem('gng_admin_token', 'local-session');
           showDashboard(email);
         } else {
-          throw new Error('Invalid authentication response');
+          loginError.style.display = 'block';
+          passwordInput.value = '';
         }
-      } catch (err) {
-        loginError.style.display = 'block';
-        passwordInput.value = '';
+      } else {
+        // ── DEPLOYED MODE: authenticate via serverless API ──
+        try {
+          const res = await fetch('/api/admin-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+
+          if (!res.ok) throw new Error('Authentication failed');
+
+          const data = await res.json();
+          if (data.success && data.token) {
+            sessionStorage.setItem('gng_admin_authenticated', 'true');
+            sessionStorage.setItem('gng_admin_email', email);
+            sessionStorage.setItem('gng_admin_token', data.token);
+            showDashboard(email);
+          } else {
+            throw new Error('Invalid authentication response');
+          }
+        } catch (err) {
+          loginError.style.display = 'block';
+          passwordInput.value = '';
+        }
       }
     });
 
@@ -587,7 +605,7 @@
       fetchBookings();
     }
 
-    // Fetch Bookings
+    // Fetch Bookings — dual mode
     async function fetchBookings() {
       tbody.innerHTML = `
         <tr>
@@ -597,37 +615,39 @@
         </tr>
       `;
 
-      const token = sessionStorage.getItem('gng_admin_token');
-      if (!token) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="6" style="text-align: center; color: var(--accent-secondary); padding: 3rem;">
-              Session expired. Please log in again.
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
       try {
-        const response = await fetch(`/api/get-bookings`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`
+        let response;
+
+        if (IS_LOCAL) {
+          // ── LOCAL MODE: query Supabase REST directly ──
+          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/bookings?select=*&order=created_at.desc`, {
+            method: 'GET',
+            headers: {
+              'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_ANON_KEY}`
+            }
+          });
+        } else {
+          // ── DEPLOYED MODE: query serverless API ──
+          const token = sessionStorage.getItem('gng_admin_token');
+          if (!token) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--accent-secondary);padding:3rem;">Session expired. Please log in again.</td></tr>`;
+            return;
           }
-        });
+          response = await fetch(`/api/get-bookings`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+        }
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
-          const errMsg = errData.error || `HTTP ${response.status}`;
-          throw new Error(errMsg);
+          throw new Error(errData.error || errData.message || `HTTP ${response.status}`);
         }
 
         bookingsList = await response.json();
-        console.log('Fetched bookings successfully');
         renderBookings(bookingsList);
       } catch (err) {
-        console.error('Fetch Bookings Error:', err);
         tbody.innerHTML = `
           <tr>
             <td colspan="6" style="text-align: center; color: var(--accent-secondary); padding: 3rem;">
@@ -635,6 +655,47 @@
             </td>
           </tr>
         `;
+      }
+    }
+
+    // Delete record logic — dual mode
+    async function deleteBooking(id) {
+      if (!confirm('Are you sure you want to permanently delete this lead record? This action cannot be undone.')) {
+        return;
+      }
+
+      try {
+        let response;
+
+        if (IS_LOCAL) {
+          // ── LOCAL MODE: delete via Supabase REST directly ──
+          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/bookings?id=eq.${id}`, {
+            method: 'DELETE',
+            headers: {
+              'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_ANON_KEY}`
+            }
+          });
+        } else {
+          // ── DEPLOYED MODE: delete via serverless API ──
+          const token = sessionStorage.getItem('gng_admin_token');
+          if (!token) {
+            alert('Your session has expired. Please log in again.');
+            return;
+          }
+          response = await fetch(`/api/delete-booking?id=${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+        }
+
+        if (!response.ok) {
+          throw new Error(`DB Delete Error: status code ${response.status}`);
+        }
+
+        fetchBookings();
+      } catch (err) {
+        alert(`Failed to delete record: ${err.message}`);
       }
     }
 
@@ -715,37 +776,6 @@
       });
 
       updateStats(list.length, agentCount, webCount);
-    }
-
-    // Delete record logic
-    async function deleteBooking(id) {
-      if (!confirm('Are you sure you want to permanently delete this lead record? This action cannot be undone.')) {
-        return;
-      }
-
-      const token = sessionStorage.getItem('gng_admin_token');
-      if (!token) {
-        alert('Your session has expired. Please log in again.');
-        return;
-      }
-
-      try {
-        const response = await fetch(`/api/delete-booking?id=${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (!response.ok) {
-          throw new Error(`DB Delete Error: status code ${response.status}`);
-        }
-
-        // Successfully deleted, refresh list
-        fetchBookings();
-      } catch (err) {
-        alert(`Failed to delete record: ${err.message}`);
-      }
     }
 
     // Open lead details modal
