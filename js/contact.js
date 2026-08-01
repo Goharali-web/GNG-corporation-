@@ -181,14 +181,40 @@ function submitFormMock(form) {
     message: document.getElementById('message').value.trim()
   };
 
-  // Perform live API request to Serverless function API
-  fetch(`/api/submit-booking`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(payload)
-  })
+  // ── Environment Detection ──
+  const IS_LOCAL = location.protocol === 'file:' 
+    || location.hostname === 'localhost' 
+    || location.hostname === '127.0.0.1';
+  const LOCAL_CFG = window.GNG_CONFIG || {};
+
+  let fetchUrl, fetchOptions;
+
+  if (IS_LOCAL && LOCAL_CFG.SUPABASE_URL) {
+    // ── LOCAL MODE: POST directly to Supabase REST ──
+    fetchUrl = `${LOCAL_CFG.SUPABASE_URL}/rest/v1/bookings`;
+    fetchOptions = {
+      method: 'POST',
+      headers: {
+        'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    };
+  } else {
+    // ── DEPLOYED MODE: POST to Vercel serverless API ──
+    fetchUrl = `/api/submit-booking`;
+    fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    };
+  }
+
+  fetch(fetchUrl, fetchOptions)
   .then(async (response) => {
     // Reset loader states
     submitBtn.classList.remove('loading');
