@@ -169,10 +169,6 @@ function submitFormMock(form) {
   // Trigger button loading spinner
   submitBtn.classList.add('loading');
 
-  // Supabase Project Credentials
-  const supabaseUrl = 'https://xneeljogbzldbdzdccdt.supabase.co';
-  const supabaseKey = 'sb_publishable_T-kioo9_PrSyWANCJD0vHQ_wBSYo_z8';
-
   // Gather form values
   const payload = {
     name: document.getElementById('name').value.trim(),
@@ -185,14 +181,11 @@ function submitFormMock(form) {
     message: document.getElementById('message').value.trim()
   };
 
-  // Perform live API request to Supabase 'bookings' table
-  fetch(`${supabaseUrl}/rest/v1/bookings`, {
+  // Perform live API request to Serverless function API
+  fetch(`/api/submit-booking`, {
     method: 'POST',
     headers: {
-      'apikey': supabaseKey,
-      'Authorization': `Bearer ${supabaseKey}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=minimal'
+      'Content-Type': 'application/json'
     },
     body: JSON.stringify(payload)
   })
@@ -231,8 +224,8 @@ function submitFormMock(form) {
 
     // Show error banner to user
     if (errorBanner) {
-      console.error('Supabase DB Insert Error:', error);
-      errorBanner.textContent = `Submission failed. Please verify your Supabase database schema or contact support. Details: ${error.message}`;
+      console.error('Submission failed [REDACTED]');
+      errorBanner.textContent = 'Submission failed. Please verify your connection or try again later.';
       errorBanner.style.display = 'block';
     }
   });
