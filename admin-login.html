@@ -101,12 +101,17 @@
     const SUPABASE_URL = IS_LOCAL ? LOCAL_CFG.SUPABASE_URL : "https://xneeljogbzldbdzdccdt.supabase.co";
     const SUPABASE_ANON_KEY = IS_LOCAL ? LOCAL_CFG.SUPABASE_ANON_KEY : "sb_publishable_T-kioo9_PrSyWANCJD0vHQ_wBSYo_z8";
 
-    // Initialize Supabase Client
+    // Initialize Supabase Client robustly
     let supabaseClient;
-    try {
-      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } catch (e) {
-      console.warn("Supabase initialization failed. Local mock mode available.", e);
+    const createClientFn = (typeof supabase !== 'undefined' && supabase.createClient) || (typeof Supabase !== 'undefined' && Supabase.createClient);
+    if (createClientFn) {
+      try {
+        supabaseClient = createClientFn(SUPABASE_URL, SUPABASE_ANON_KEY);
+      } catch (e) {
+        console.error("Supabase creation error:", e);
+      }
+    } else {
+      console.warn("Supabase library not loaded. Local mock mode available.");
     }
 
     const loginForm = document.getElementById('admin-login-form');
