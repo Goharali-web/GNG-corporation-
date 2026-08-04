@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login | GNG Corporation</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .admin-body {
+      background-color: #050507;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Glassmorphic Login Screen */
+    .login-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .login-card {
+      background: rgba(18, 18, 20, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 20px;
+      padding: 3rem;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(99, 102, 241, 0.05);
+      text-align: center;
+    }
+
+    .login-logo {
+      margin-bottom: 2rem;
+    }
+
+    .login-title {
+      font-size: 1.75rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .login-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+  </style>
+</head>
+<body class="admin-body">
+
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-logo">
+        <a href="index.html" class="logo" style="justify-content: center;">
+          GNG<span>Corporation</span><span class="logo-dot"></span>
+        </a>
+      </div>
+      <h2 class="login-title">Admin Access</h2>
+      <p class="login-subtitle">Authenticate to manage services and view leads</p>
+      
+      <form id="admin-login-form" style="display: flex; flex-direction: column; gap: 1.25rem; text-align: left;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="admin-email" class="form-label">Admin Email</label>
+          <input type="email" id="admin-email" class="form-control" placeholder="admin@gng.co" required>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="admin-password" class="form-label">Password</label>
+          <input type="password" id="admin-password" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <div id="login-error-banner" class="form-status form-status-error" style="margin-top: 0.5rem; margin-bottom: 0; display: none;">
+          Invalid credentials. Please verify your entries.
+        </div>
+
+        <button type="submit" id="submit-btn" class="btn btn-primary" style="margin-top: 1rem; width: 100%;">
+          Authenticate System
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Supabase JS Client & Config Fallback -->
+  <script src="js/config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // ── Environment Detection ──
+    const IS_LOCAL = location.protocol === 'file:' 
+      || location.hostname === 'localhost' 
+      || location.hostname === '127.0.0.1';
+
+    const LOCAL_CFG = window.GNG_CONFIG || {};
+
+    const SUPABASE_URL = IS_LOCAL ? LOCAL_CFG.SUPABASE_URL : "https://xneeljogbzldbdzdccdt.supabase.co";
+    const SUPABASE_ANON_KEY = IS_LOCAL ? LOCAL_CFG.SUPABASE_ANON_KEY : "sb_publishable_T-kioo9_PrSyWANCJD0vHQ_wBSYo_z8";
+
+    // Initialize Supabase Client
+    let supabaseClient;
+    try {
+      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch (e) {
+      console.warn("Supabase initialization failed. Local mock mode available.", e);
+    }
+
+    const loginForm = document.getElementById('admin-login-form');
+    const emailInput = document.getElementById('admin-email');
+    const passwordInput = document.getElementById('admin-password');
+    const loginError = document.getElementById('login-error-banner');
+    const submitBtn = document.getElementById('submit-btn');
+
+    // Run auth check on load: if session exists, redirect straight to admin.html
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Clear legacy sessionStorage indicators if they are here
+      if (supabaseClient) {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+          window.location.replace('admin.html');
+          return;
+        }
+      }
+      
+      const localAuth = sessionStorage.getItem('gng_admin_authenticated');
+      if (localAuth === 'true') {
+        window.location.replace('admin.html');
+      }
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginError.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Authenticating...";
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      try {
+        // ── LOCAL FALLBACK MODE ──
+        if (IS_LOCAL && email === LOCAL_CFG.ADMIN_EMAIL && password === LOCAL_CFG.ADMIN_PASSWORD) {
+          sessionStorage.setItem('gng_admin_authenticated', 'true');
+          sessionStorage.setItem('gng_admin_email', email);
+          window.location.replace('admin.html');
+          return;
+        }
+
+        // ── SUPABASE AUTH MODE ──
+        if (!supabaseClient) {
+          throw new Error("Supabase client is not configured.");
+        }
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+        if (error) throw error;
+
+        if (data.session) {
+          sessionStorage.setItem('gng_admin_authenticated', 'true');
+          sessionStorage.setItem('gng_admin_email', email);
+          window.location.replace('admin.html');
+        } else {
+          throw new Error("No active session returned.");
+        }
+      } catch (err) {
+        console.error("Authentication Error:", err.message);
+        loginError.textContent = err.message || "Invalid credentials. Please verify your entries.";
+        loginError.style.display = 'block';
+        passwordInput.value = '';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Authenticate System";
+      }
+    });
+  </script>
+</body>
+</html>
