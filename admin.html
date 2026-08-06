@@ -1368,6 +1368,12 @@
       const id = serviceIdField.value;
       const isEdit = !!id;
 
+      // Validate subcategory for Web Packages
+      if (serviceCategory.value === 'web_package' && !serviceSubcategory.value) {
+        alert('Please select a subcategory (Standard Web or 3D / Immersive) for the Web Package.');
+        return;
+      }
+
       // Extract details
       const featuresText = serviceFeatures.value.trim();
       const featuresArray = featuresText.split('\n').map(f => f.trim()).filter(Boolean);
