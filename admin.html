@@ -323,6 +323,87 @@
       white-space: pre-wrap;
       line-height: 1.6;
     }
+
+    /* Tabs Control CSS */
+    .admin-tabs-row {
+      display: flex;
+      gap: 2rem;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 2rem;
+    }
+
+    .admin-tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding-bottom: 1rem;
+      position: relative;
+      transition: color 0.3s ease;
+      font-family: inherit;
+    }
+
+    .admin-tab-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .admin-tab-btn.active {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .admin-tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--accent-color);
+    }
+
+    .admin-section {
+      display: none;
+    }
+
+    .admin-section.active {
+      display: block;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .badge-agent {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .badge-package {
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--accent-color);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .badge-status-active {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+    }
+
+    .badge-status-archived {
+      background-color: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+    }
   </style>
 </head>
 <body class="admin-body">
@@ -375,69 +456,146 @@
     </header>
 
     <main class="admin-main">
-      <div style="margin-bottom: 3rem;">
-        <span class="section-subtitle">Database Analytics</span>
-        <h1 style="font-size: 2.75rem;">Lead Telemetry</h1>
+      <div style="margin-bottom: 2rem;">
+        <span class="section-subtitle">System Dashboard</span>
+        <h1 style="font-size: 2.75rem;">Control Panel</h1>
       </div>
 
-      <!-- Stats Grid -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <span class="stat-label">Total Leads</span>
-          <span id="stat-total" class="stat-value">-</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">AI Agent Inquiries</span>
-          <span id="stat-agents" class="stat-value">-</span>
-        </div>
-        <div class="stat-card">
-          <span class="stat-label">Web Package Tiers</span>
-          <span id="stat-web" class="stat-value">-</span>
-        </div>
+      <!-- Navigation Tabs -->
+      <div class="admin-tabs-row">
+        <button id="tab-leads" class="admin-tab-btn active">Leads Telemetry</button>
+        <button id="tab-services" class="admin-tab-btn">Manage Services</button>
       </div>
 
-      <!-- Filters & Actions -->
-      <div class="controls-row">
-        <div class="search-wrapper">
-          <!-- Search Icon SVG -->
-          <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-          <input type="text" id="search-filter" class="form-control search-input" placeholder="Search by name, email, company...">
+      <!-- SECTION 1: LEADS TELEMETRY -->
+      <div id="leads-section" class="admin-section active">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Total Leads</span>
+            <span id="stat-total" class="stat-value">-</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">AI Agent Inquiries</span>
+            <span id="stat-agents" class="stat-value">-</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Web Package Tiers</span>
+            <span id="stat-web" class="stat-value">-</span>
+          </div>
         </div>
-        
-        <div style="display: flex; gap: 1rem;">
-          <button id="refresh-btn" class="btn btn-secondary btn-sm" style="height: 42px;">
-            <!-- Refresh SVG -->
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+
+        <!-- Filters & Actions -->
+        <div class="controls-row">
+          <div class="search-wrapper">
+            <!-- Search Icon SVG -->
+            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
-            Sync DB
-          </button>
+            <input type="text" id="search-filter" class="form-control search-input" placeholder="Search by name, email, company...">
+          </div>
+          
+          <div style="display: flex; gap: 1rem;">
+            <button id="refresh-btn" class="btn btn-secondary btn-sm" style="height: 42px;">
+              <!-- Refresh SVG -->
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+              Sync DB
+            </button>
+          </div>
+        </div>
+
+        <!-- Table Wrapper -->
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Company</th>
+                <th>Service</th>
+                <th style="text-align: right; width: 100px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="bookings-tbody">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                  Awaiting authentication verification...
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <!-- Table Wrapper -->
-      <div class="admin-table-wrapper">
-        <table class="admin-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Company</th>
-              <th>Service</th>
-              <th style="text-align: right; width: 100px;">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="bookings-tbody">
-            <tr>
-              <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">
-                Awaiting authentication verification...
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- SECTION 2: MANAGE SERVICES -->
+      <div id="services-section" class="admin-section">
+        <!-- Stats Grid for Services -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">Total Offerings</span>
+            <span id="stat-services-total" class="stat-value">-</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">AI Agents</span>
+            <span id="stat-services-agents" class="stat-value">-</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Web Packages</span>
+            <span id="stat-services-web" class="stat-value">-</span>
+          </div>
+        </div>
+
+        <!-- Controls Row for Services -->
+        <div class="controls-row">
+          <div class="search-wrapper">
+            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input type="text" id="services-search-filter" class="form-control search-input" placeholder="Search by name, description, price...">
+          </div>
+          <div style="display: flex; gap: 1rem;">
+            <button id="add-service-btn" class="btn btn-primary btn-sm" style="height: 42px;">
+              <!-- Plus SVG -->
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.25rem;">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Add Offering
+            </button>
+            <button id="services-refresh-btn" class="btn btn-secondary btn-sm" style="height: 42px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+              </svg>
+              Refresh Offerings
+            </button>
+          </div>
+        </div>
+
+        <!-- Services Table Wrapper -->
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th style="width: 60px;">Order</th>
+                <th>Offering Name</th>
+                <th>Category</th>
+                <th>Price Tier</th>
+                <th>Subcategory</th>
+                <th style="text-align: right; width: 150px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="services-tbody">
+              <tr>
+                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                  Awaiting database connection...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </main>
   </div>
@@ -492,6 +650,96 @@
     </div>
   </div>
 
+  <!-- 4. SERVICE EDIT/ADD MODAL -->
+  <div id="service-modal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="service-modal-title" style="margin: 0;">Add Offering</h3>
+        <button id="close-service-modal-btn" class="action-btn" aria-label="Close modal">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <form id="service-form">
+        <input type="hidden" id="service-id-field">
+        <div class="modal-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="service-category" class="form-label">Category</label>
+              <select id="service-category" class="form-control" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem;" required>
+                <option value="ai_agent">AI Agent</option>
+                <option value="web_package">Web Package</option>
+              </select>
+            </div>
+            <div id="service-subcategory-group" class="form-group" style="margin-bottom: 0; display: none;">
+              <label for="service-subcategory" class="form-label">Subcategory</label>
+              <select id="service-subcategory" class="form-control" style="background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.75rem;">
+                <option value="">None (AI Agent)</option>
+                <option value="standard">Standard Web</option>
+                <option value="immersive">3D / Immersive</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.25rem;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="service-name" class="form-label">Offering Name</label>
+              <input type="text" id="service-name" class="form-control" placeholder="e.g. WhatsApp AI Agent" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="service-price" class="form-label">Pricing Display</label>
+              <input type="text" id="service-price" class="form-control" placeholder="e.g. $499 / month" required>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="service-description" class="form-label">Description</label>
+            <textarea id="service-description" class="form-control" rows="3" placeholder="Enter service description summary..." style="resize: vertical; min-height: 80px;" required></textarea>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="service-features" class="form-label">Key Features (One per line)</label>
+            <textarea id="service-features" class="form-control" rows="4" placeholder="Feature 1&#10;Feature 2&#10;Feature 3" style="resize: vertical; min-height: 100px;" required></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="service-detail-url" class="form-label">Detail HTML Link</label>
+              <input type="text" id="service-detail-url" class="form-control" placeholder="e.g. agent-whatsapp.html">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="service-color" class="form-label">Base Accent Color</label>
+              <input type="text" id="service-color" class="form-control" placeholder="e.g. #10b981" value="#6366f1">
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label for="service-display-order" class="form-label">Display Order (Sorting)</label>
+              <input type="number" id="service-display-order" class="form-control" value="0" min="0" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0; display: flex; align-items: center; gap: 0.75rem; padding-top: 1.75rem;">
+              <input type="checkbox" id="service-archived" style="width: 18px; height: 18px; cursor: pointer;">
+              <label for="service-archived" style="margin: 0; cursor: pointer; user-select: none;">Archive (Hide from site)</label>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label for="service-icon" class="form-label">Icon SVG Definition (Inline SVG paths)</label>
+            <textarea id="service-icon" class="form-control" rows="2" placeholder="e.g. <path d='...' /> or custom SVG tag" style="font-family: monospace; font-size: 0.8rem; resize: vertical; min-height: 60px;"></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <button type="button" id="cancel-service-btn" class="btn btn-secondary btn-sm" style="height: 42px;">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm" style="height: 42px;">Save Offering</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="js/config.js"></script>
   <script>
     // ── Environment Detection ──
@@ -504,6 +752,7 @@
 
     // State
     let bookingsList = [];
+    let servicesList = [];
 
     // DOM Elements
     const loginScreen = document.getElementById('login-screen');
@@ -522,7 +771,22 @@
     const logoutBtn = document.getElementById('logout-btn');
     const navUserEmail = document.getElementById('nav-user-email');
 
-    // Modal elements
+    // Tabs & Sections
+    const leadsTab = document.getElementById('tab-leads');
+    const servicesTab = document.getElementById('tab-services');
+    const leadsSection = document.getElementById('leads-section');
+    const servicesSection = document.getElementById('services-section');
+
+    // DOM Elements for Services
+    const statServicesTotal = document.getElementById('stat-services-total');
+    const statServicesAgents = document.getElementById('stat-services-agents');
+    const statServicesWeb = document.getElementById('stat-services-web');
+    const servicesTbody = document.getElementById('services-tbody');
+    const servicesSearchFilter = document.getElementById('services-search-filter');
+    const addServiceBtn = document.getElementById('add-service-btn');
+    const servicesRefreshBtn = document.getElementById('services-refresh-btn');
+
+    // Modal elements for Leads
     const detailsModal = document.getElementById('details-modal');
     const closeModalBtn = document.getElementById('close-modal-btn');
     const modalClientName = document.getElementById('modal-client-name');
@@ -533,6 +797,26 @@
     const detailBusiness = document.getElementById('detail-business');
     const detailService = document.getElementById('detail-service');
     const detailMessage = document.getElementById('detail-message');
+
+    // Modal elements for Services
+    const serviceModal = document.getElementById('service-modal');
+    const closeServiceModalBtn = document.getElementById('close-service-modal-btn');
+    const cancelServiceBtn = document.getElementById('cancel-service-btn');
+    const serviceForm = document.getElementById('service-form');
+    const serviceModalTitle = document.getElementById('service-modal-title');
+    const serviceIdField = document.getElementById('service-id-field');
+    const serviceCategory = document.getElementById('service-category');
+    const serviceSubcategory = document.getElementById('service-subcategory');
+    const serviceSubcategoryGroup = document.getElementById('service-subcategory-group');
+    const serviceName = document.getElementById('service-name');
+    const servicePrice = document.getElementById('service-price');
+    const serviceDescription = document.getElementById('service-description');
+    const serviceFeatures = document.getElementById('service-features');
+    const serviceDetailUrl = document.getElementById('service-detail-url');
+    const serviceColor = document.getElementById('service-color');
+    const serviceDisplayOrder = document.getElementById('service-display-order');
+    const serviceArchived = document.getElementById('service-archived');
+    const serviceIcon = document.getElementById('service-icon');
 
     // Check auth status on load
     document.addEventListener('DOMContentLoaded', () => {
@@ -603,6 +887,7 @@
       dashboardPanel.style.display = 'flex';
       navUserEmail.textContent = email;
       fetchBookings();
+      fetchServices();
     }
 
     // Fetch Bookings — dual mode
@@ -839,6 +1124,358 @@
     refreshBtn.addEventListener('click', () => {
       fetchBookings();
     });
+
+    // ── Tab Switch Controls ──
+    leadsTab.addEventListener('click', () => {
+      leadsTab.classList.add('active');
+      servicesTab.classList.remove('active');
+      leadsSection.classList.add('active');
+      servicesSection.classList.remove('active');
+    });
+
+    servicesTab.addEventListener('click', () => {
+      servicesTab.classList.add('active');
+      leadsTab.classList.remove('active');
+      servicesSection.classList.add('active');
+      leadsSection.classList.remove('active');
+    });
+
+    // ── Toggle Subcategory Dropdown ──
+    serviceCategory.addEventListener('change', () => {
+      if (serviceCategory.value === 'web_package') {
+        serviceSubcategoryGroup.style.display = 'block';
+        serviceSubcategory.required = true;
+      } else {
+        serviceSubcategoryGroup.style.display = 'none';
+        serviceSubcategory.required = false;
+        serviceSubcategory.value = '';
+      }
+    });
+
+    // ── Services Fetching (Dual-mode) ──
+    async function fetchServices() {
+      servicesTbody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+            Connecting to database offerings...
+          </td>
+        </tr>
+      `;
+
+      try {
+        let response;
+        if (IS_LOCAL) {
+          // Local mode query directly to Supabase REST
+          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/services?order=display_order.asc`, {
+            method: 'GET',
+            headers: {
+              'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_ANON_KEY}`
+            }
+          });
+        } else {
+          // Deployed mode query via serverless API
+          response = await fetch('/api/services', {
+            method: 'GET'
+          });
+        }
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || `HTTP ${response.status}`);
+        }
+
+        servicesList = await response.json();
+        renderServices(servicesList);
+      } catch (err) {
+        console.error('Fetch Services Error:', err);
+        servicesTbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--accent-secondary); padding: 3rem;">
+              Failed to load offerings: ${err.message}
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    // Render Services list table
+    function renderServices(list) {
+      if (list.length === 0) {
+        servicesTbody.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+              No services found in database.
+            </td>
+          </tr>
+        `;
+        updateServicesStats(0, 0, 0);
+        return;
+      }
+
+      let agentCount = 0;
+      let webCount = 0;
+
+      servicesTbody.innerHTML = '';
+      list.forEach(svc => {
+        if (svc.category === 'ai_agent') agentCount++;
+        else if (svc.category === 'web_package') webCount++;
+
+        const isArchived = svc.is_archived;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${svc.display_order}</td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: ${svc.color || '#6366f1'}"></span>
+              <strong>${escapeHtml(svc.name)}</strong>
+              ${isArchived ? '<span class="badge badge-status-archived" style="margin-left: 0.5rem; transform: scale(0.85);">Archived</span>' : ''}
+            </div>
+          </td>
+          <td>
+            <span class="badge ${svc.category === 'ai_agent' ? 'badge-agent' : 'badge-package'}">
+              ${svc.category === 'ai_agent' ? 'AI Agent' : 'Web Package'}
+            </span>
+          </td>
+          <td><code style="color: var(--text-primary); font-family: monospace;">${escapeHtml(svc.price)}</code></td>
+          <td style="text-transform: capitalize; color: var(--text-muted);">${svc.subcategory || 'N/A'}</td>
+          <td style="text-align: right;">
+            <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+              <button class="btn btn-secondary btn-sm edit-svc-btn" data-id="${svc.id}" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; height: 30px;">Edit</button>
+              <button class="btn btn-secondary btn-sm delete-svc-btn" data-id="${svc.id}" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; height: 30px; border-color: rgba(239,68,68,0.2); color: #ef4444;">Delete</button>
+            </div>
+          </td>
+        `;
+        servicesTbody.appendChild(row);
+      });
+
+      // Wire up row buttons
+      document.querySelectorAll('.edit-svc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          const service = servicesList.find(s => s.id == id || s.id === id);
+          if (service) openServiceModal(service);
+        });
+      });
+
+      document.querySelectorAll('.delete-svc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-id');
+          deleteService(id);
+        });
+      });
+
+      updateServicesStats(list.length, agentCount, webCount);
+    }
+
+    function updateServicesStats(total, agents, web) {
+      statServicesTotal.textContent = total;
+      statServicesAgents.textContent = agents;
+      statServicesWeb.textContent = web;
+    }
+
+    // Search filter for services
+    servicesSearchFilter.addEventListener('input', () => {
+      const q = servicesSearchFilter.value.trim().toLowerCase();
+      if (!q) {
+        renderServices(servicesList);
+        return;
+      }
+      const filtered = servicesList.filter(s => {
+        return (s.name || '').toLowerCase().includes(q) ||
+               (s.description || '').toLowerCase().includes(q) ||
+               (s.price || '').toLowerCase().includes(q) ||
+               (s.category || '').toLowerCase().includes(q) ||
+               (s.subcategory || '').toLowerCase().includes(q);
+      });
+      renderServices(filtered);
+    });
+
+    servicesRefreshBtn.addEventListener('click', () => {
+      fetchServices();
+    });
+
+    // ── Open Service Modal ──
+    function openServiceModal(service = null) {
+      serviceForm.reset();
+      
+      if (service) {
+        // Edit Mode
+        serviceModalTitle.textContent = 'Edit Offering';
+        serviceIdField.value = service.id;
+        serviceCategory.value = service.category;
+        
+        // Trigger category change visual styling
+        if (service.category === 'web_package') {
+          serviceSubcategoryGroup.style.display = 'block';
+          serviceSubcategory.required = true;
+          serviceSubcategory.value = service.subcategory || '';
+        } else {
+          serviceSubcategoryGroup.style.display = 'none';
+          serviceSubcategory.required = false;
+          serviceSubcategory.value = '';
+        }
+
+        serviceName.value = service.name || '';
+        servicePrice.value = service.price || '';
+        serviceDescription.value = service.description || '';
+        
+        // Process features format (array vs json string)
+        let feats = service.features || [];
+        if (typeof feats === 'string') {
+          try { feats = JSON.parse(feats); } catch(e) { feats = []; }
+        }
+        serviceFeatures.value = Array.isArray(feats) ? feats.join('\n') : '';
+
+        serviceDetailUrl.value = service.detail_url || '';
+        serviceColor.value = service.color || '#6366f1';
+        serviceDisplayOrder.value = service.display_order || 0;
+        serviceArchived.checked = !!service.is_archived;
+        serviceIcon.value = service.icon || '';
+      } else {
+        // Add Mode
+        serviceModalTitle.textContent = 'Add Offering';
+        serviceIdField.value = '';
+        serviceSubcategoryGroup.style.display = 'none';
+        serviceSubcategory.required = false;
+        serviceSubcategory.value = '';
+        serviceColor.value = '#6366f1';
+        serviceDisplayOrder.value = servicesList.length + 1;
+        serviceArchived.checked = false;
+      }
+
+      serviceModal.style.display = 'flex';
+    }
+
+    function closeServiceModal() {
+      serviceModal.style.display = 'none';
+      serviceForm.reset();
+    }
+
+    addServiceBtn.addEventListener('click', () => openServiceModal(null));
+    closeServiceModalBtn.addEventListener('click', closeServiceModal);
+    cancelServiceBtn.addEventListener('click', closeServiceModal);
+
+    // Close modal if background is clicked
+    serviceModal.addEventListener('click', (e) => {
+      if (e.target === serviceModal) closeServiceModal();
+    });
+
+    // ── Save Service Form ──
+    serviceForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const id = serviceIdField.value;
+      const isEdit = !!id;
+
+      // Extract details
+      const featuresText = serviceFeatures.value.trim();
+      const featuresArray = featuresText.split('\n').map(f => f.trim()).filter(Boolean);
+
+      const payload = {
+        category: serviceCategory.value,
+        subcategory: serviceCategory.value === 'web_package' ? serviceSubcategory.value : null,
+        name: serviceName.value.trim(),
+        price: servicePrice.value.trim(),
+        description: serviceDescription.value.trim(),
+        features: JSON.stringify(featuresArray),
+        detail_url: serviceDetailUrl.value.trim(),
+        color: serviceColor.value.trim(),
+        display_order: parseInt(serviceDisplayOrder.value, 10) || 0,
+        is_archived: serviceArchived.checked,
+        icon: serviceIcon.value.trim()
+      };
+
+      try {
+        let response;
+        if (IS_LOCAL) {
+          // Direct Supabase Rest
+          let url = `${LOCAL_CFG.SUPABASE_URL}/rest/v1/services`;
+          let method = 'POST';
+          
+          if (isEdit) {
+            url += `?id=eq.${id}`;
+            method = 'PATCH';
+          }
+
+          response = await fetch(url, {
+            method,
+            headers: {
+              'apikey': LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY || LOCAL_CFG.SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY || LOCAL_CFG.SUPABASE_ANON_KEY}`,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=representation'
+            },
+            body: JSON.stringify(payload)
+          });
+        } else {
+          // Serverless API routing
+          const token = sessionStorage.getItem('gng_admin_token');
+          let url = '/api/services';
+          let method = 'POST';
+
+          if (isEdit) {
+            url += `?id=${id}`;
+            method = 'PUT';
+          }
+
+          response = await fetch(url, {
+            method,
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+        }
+
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(errText || `Server returned HTTP ${response.status}`);
+        }
+
+        closeServiceModal();
+        fetchServices();
+      } catch (err) {
+        alert(`Failed to save offering: ${err.message}`);
+      }
+    });
+
+    // ── Delete Service ──
+    async function deleteService(id) {
+      if (!confirm('Are you sure you want to permanently delete this offering from the database? This action cannot be undone.')) {
+        return;
+      }
+
+      try {
+        let response;
+        if (IS_LOCAL) {
+          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/services?id=eq.${id}`, {
+            method: 'DELETE',
+            headers: {
+              'apikey': LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY || LOCAL_CFG.SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY || LOCAL_CFG.SUPABASE_ANON_KEY}`
+            }
+          });
+        } else {
+          const token = sessionStorage.getItem('gng_admin_token');
+          response = await fetch(`/api/services?id=${id}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+        }
+
+        if (!response.ok) {
+          throw new Error(`DB Delete Error: status code ${response.status}`);
+        }
+
+        fetchServices();
+      } catch (err) {
+        alert(`Failed to remove offering: ${err.message}`);
+      }
+    }
 
     // Helpers
     function escapeHtml(str) {
