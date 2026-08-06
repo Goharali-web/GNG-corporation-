@@ -69,6 +69,14 @@ module.exports = async (req, res) => {
     if (!verifyToken(token)) {
       return res.status(401).json({ error: 'Unauthorized: Invalid or expired session' });
     }
+
+    // Verify service role key configuration to catch setup issues
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!serviceRoleKey || serviceRoleKey.trim() === '' || serviceRoleKey.includes('your_supabase_service_role_key')) {
+      return res.status(500).json({ 
+        error: 'Service configuration error: SUPABASE_SERVICE_ROLE_KEY environment variable is not configured on Vercel. Please add it to your project settings and redeploy.' 
+      });
+    }
   }
 
   try {
