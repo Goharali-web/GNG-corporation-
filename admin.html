@@ -1342,12 +1342,17 @@
         let response;
 
         if (IS_LOCAL) {
+          // Use service role key for writes if available, otherwise fall back to anon key
+          const writeKey = LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY && !LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY.includes('your_supabase') 
+            ? LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY 
+            : LOCAL_CFG.SUPABASE_ANON_KEY;
           response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/bookings?id=eq.${id}`, {
             method: 'PATCH',
             headers: {
-              'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_ANON_KEY}`,
-              'Content-Type': 'application/json'
+              'apikey': writeKey,
+              'Authorization': `Bearer ${writeKey}`,
+              'Content-Type': 'application/json',
+              'Prefer': 'return=representation'
             },
             body: JSON.stringify({ status: newStatus })
           });
@@ -1368,11 +1373,13 @@
         }
 
         if (!response.ok) {
-          throw new Error(`DB Update Error: status code ${response.status}`);
+          const errData = await response.json().catch(() => ({}));
+          const detail = errData.detail || errData.error || '';
+          throw new Error(`Status ${response.status}: ${detail}`);
         }
 
         // Update local state status and re-render without refetching from db (instant UI update)
-        const booking = bookingsList.find(b => b.id === id);
+        const booking = bookingsList.find(b => b.id === id || String(b.id) === String(id));
         if (booking) {
           booking.status = newStatus;
           applyBookingsFilters();
