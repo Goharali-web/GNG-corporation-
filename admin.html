@@ -1257,7 +1257,7 @@
         card.className = 'booking-card';
         card.innerHTML = `
           <div class="booking-card-header">
-            <span class="booking-id" title="Booking ID: ${booking.id}">ID: ${booking.id.substring(0, 8)}...</span>
+            <span class="booking-id" title="Booking ID: ${booking.id}">ID: ${String(booking.id).substring(0, 8)}...</span>
             <span class="booking-date">${dateStr}</span>
           </div>
           
