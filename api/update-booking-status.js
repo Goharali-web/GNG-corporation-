@@ -13,7 +13,7 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Auth check
+  // Auth check — admin only
   const authHeader = req.headers.authorization || '';
   const token = authHeader.replace('Bearer ', '').trim();
 
@@ -33,7 +33,8 @@ module.exports = async (req, res) => {
   }
 
   const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_ANON_KEY;
+  // Use service role key for write operations (anon key is blocked by RLS)
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseKey) {
     return res.status(500).json({ error: 'Service configuration error' });
@@ -49,6 +50,7 @@ module.exports = async (req, res) => {
       'apikey': supabaseKey,
       'Authorization': `Bearer ${supabaseKey}`,
       'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
       'Content-Length': Buffer.byteLength(payload)
     }
   };
@@ -63,12 +65,17 @@ module.exports = async (req, res) => {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return res.status(200).json({ success: true });
       } else {
-        return res.status(500).json({ error: 'Failed to update record in database' });
+        console.error('Supabase PATCH failed:', response.statusCode, data);
+        return res.status(500).json({ 
+          error: 'Failed to update record in database',
+          detail: data 
+        });
       }
     });
   });
 
-  request.on('error', () => {
+  request.on('error', (err) => {
+    console.error('Supabase request error:', err.message);
     return res.status(500).json({ error: 'Database connection failed' });
   });
 
