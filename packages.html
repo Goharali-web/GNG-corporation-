@@ -29,6 +29,90 @@
       text-transform: uppercase;
       letter-spacing: 0.1em;
     }
+
+    /* Portfolio Websites We've Built Styles */
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .portfolio-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .portfolio-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+    .portfolio-thumbnail-wrapper {
+      position: relative;
+      width: 100%;
+      padding-top: 56.25%; /* 16:9 Aspect Ratio */
+      background-color: rgba(255, 255, 255, 0.02);
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .portfolio-thumbnail {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .portfolio-card:hover .portfolio-thumbnail {
+      transform: scale(1.05);
+    }
+    .portfolio-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.04) 0%, rgba(99, 102, 241, 0.12) 100%);
+      color: var(--accent-color);
+      gap: 0.5rem;
+    }
+    .portfolio-card-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .portfolio-card-tag {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .portfolio-card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 0.5rem 0;
+    }
+    .portfolio-card-description {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      flex-grow: 1;
+    }
   </style>
 </head>
 <body>
@@ -113,6 +197,24 @@
         <!-- Dynamically populated from Supabase -->
         <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
           Loading immersive 3D website packages...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WEBSITES WE'VE BUILT (PORTFOLIO) SECTION -->
+  <section class="section" id="portfolio" style="border-top: 1px solid var(--border-color); padding-top: 6rem; padding-bottom: 4rem;">
+    <div class="container">
+      <div class="section-title-wrapper text-center reveal">
+        <span class="section-subtitle">OUR WORK</span>
+        <h2 class="section-title">Websites We've Built</h2>
+        <p class="section-description">A curated selection of live production websites engineered across our Standard and 3D Immersive tracks.</p>
+      </div>
+
+      <div id="portfolio-grid" class="portfolio-grid">
+        <!-- Dynamically populated from Supabase -->
+        <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
+          Connecting to database offerings...
         </div>
       </div>
     </div>
@@ -404,6 +506,84 @@
             const isRecommended = svc.name.toLowerCase().includes('admin') && svc.subcategory === 'immersive';
             renderCard(immersiveGrid, svc, index, isRecommended);
           });
+        }
+
+        // Fetch and Render Portfolio
+        const portfolioGrid = document.getElementById('portfolio-grid');
+        try {
+          let portResponse;
+          if (IS_LOCAL) {
+            portResponse = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/portfolio?order=display_order.asc`, {
+              method: 'GET',
+              headers: {
+                'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_ANON_KEY}`
+              }
+            });
+          } else {
+            portResponse = await fetch('/api/portfolio');
+          }
+
+          if (portResponse.ok) {
+            const portfolioItems = await portResponse.json();
+            if (portfolioItems.length === 0) {
+              portfolioGrid.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
+                  No showcase sites currently listed.
+                </div>
+              `;
+            } else {
+              portfolioGrid.innerHTML = '';
+              portfolioItems.forEach((item, index) => {
+                const delayClass = `delay-${((index % 3) + 1) * 100}`;
+                const card = document.createElement('div');
+                card.className = `portfolio-card reveal ${delayClass}`;
+                
+                const tagMarkup = item.tier_tag ? `<span class="portfolio-card-tag">${escapeHtml(item.tier_tag)}</span>` : '';
+                
+                const imgMarkup = item.thumbnail_url ? `
+                  <img src="${escapeHtml(item.thumbnail_url)}" alt="${escapeHtml(item.title)}" class="portfolio-thumbnail">
+                ` : `
+                  <div class="portfolio-placeholder">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                      <line x1="8" y1="21" x2="16" y2="21"/>
+                      <line x1="12" y1="17" x2="12" y2="21"/>
+                    </svg>
+                    <span style="font-size: 0.8rem; font-weight: 500;">Preview Coming Soon</span>
+                  </div>
+                `;
+
+                card.innerHTML = `
+                  <div class="portfolio-thumbnail-wrapper">
+                    ${imgMarkup}
+                  </div>
+                  <div class="portfolio-card-content">
+                    ${tagMarkup}
+                    <h3 class="portfolio-card-title">${escapeHtml(item.title)}</h3>
+                    <p class="portfolio-card-description">${escapeHtml(item.description)}</p>
+                    <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="btn-link" style="margin-top: auto; font-size: 0.9rem; font-weight: 600;">
+                      Visit Site
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 0.25rem;">
+                        <line x1="7" y1="17" x2="17" y2="7"></line>
+                        <polyline points="7 7 17 7 17 17"></polyline>
+                      </svg>
+                    </a>
+                  </div>
+                `;
+                portfolioGrid.appendChild(card);
+              });
+            }
+          } else {
+            throw new Error(`HTTP ${portResponse.status}`);
+          }
+        } catch (err) {
+          console.error('Failed to load portfolio items:', err);
+          portfolioGrid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; color: var(--accent-secondary); padding: 3rem;">
+              Failed to load showcase listings. Please refresh.
+            </div>
+          `;
         }
 
         // Initialize scroll reveal animations for newly added dynamic elements
