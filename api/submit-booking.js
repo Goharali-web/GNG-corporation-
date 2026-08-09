@@ -40,8 +40,7 @@ module.exports = async (req, res) => {
     phone,
     business_type,
     service,
-    message,
-    status: 'pending'
+    message
   });
 
   const options = {
