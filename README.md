@@ -19,9 +19,10 @@ Before deploying, you **must** configure the following environment variables in 
 | Variable Name | Description | Example Value |
 |---|---|---|
 | `SUPABASE_URL` | Your Supabase database endpoint | `https://your-project-id.supabase.co` |
-| `SUPABASE_ANON_KEY` | Your Supabase anon publishable key | `sb_publishable_T-kioo9_...` |
-| `ADMIN_EMAIL` | The admin email to access the logs dashboard | `ga480926@gmail.com` |
-| `ADMIN_PASSWORD` | The admin password to access the logs dashboard | `nM^desWM%?19_)gng` |
+| `SUPABASE_ANON_KEY` | Your Supabase anon publishable key | `your-supabase-anon-key` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Your Supabase service role key (**server-side only**) | `your-supabase-service-role-key` |
+| `ADMIN_EMAIL` | The admin email to access the dashboard | `admin@example.com` |
+| `ADMIN_PASSWORD` | The admin password to access the dashboard | `choose-a-strong-password` |
 | `ADMIN_SESSION_SECRET` | Any random string used to sign session tokens | `a-long-random-string-signature-hash` |
 
 *See [.env.example](file:///c:/Users/HP/Desktop/GNG%20Corporation%20website/.env.example) for a template configuration.*
