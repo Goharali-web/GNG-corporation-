@@ -18,7 +18,11 @@ function verifyToken(token) {
   const adminEmail = process.env.ADMIN_EMAIL;
   if (email !== adminEmail) return false;
 
-  const sessionSecret = process.env.ADMIN_SESSION_SECRET || 'gng-secret-key-10928';
+  const sessionSecret = process.env.ADMIN_SESSION_SECRET;
+  if (!sessionSecret) {
+    console.error("CRITICAL SECURITY ERROR: ADMIN_SESSION_SECRET is not configured on Vercel.");
+    return false;
+  }
   const expectedMessage = `${email}:${timestampStr}`;
   const expectedSignature = crypto.createHmac('sha256', sessionSecret).update(expectedMessage).digest('hex');
 
