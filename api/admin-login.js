@@ -23,9 +23,10 @@ module.exports = async (req, res) => {
 
   const adminEmail = process.env.ADMIN_EMAIL;
   const adminPassword = process.env.ADMIN_PASSWORD;
-  const sessionSecret = process.env.ADMIN_SESSION_SECRET || 'gng-secret-key-10928';
+  const sessionSecret = process.env.ADMIN_SESSION_SECRET;
 
-  if (!adminEmail || !adminPassword) {
+  if (!adminEmail || !adminPassword || !sessionSecret) {
+    console.error("CRITICAL SECURITY ERROR: ADMIN_EMAIL, ADMIN_PASSWORD, or ADMIN_SESSION_SECRET environment variables are missing.");
     return res.status(500).json({ error: 'Service configuration error' });
   }
 
