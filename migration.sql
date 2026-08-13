@@ -31,3 +31,26 @@ ALTER TABLE portfolio ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Allow public read access" ON portfolio
   FOR SELECT USING (true);
 
+
+-- =====================================================================
+-- 6. Enable RLS on bookings table
+-- =====================================================================
+ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
+
+-- Allow anonymous/public users to INSERT new booking submissions only.
+-- No SELECT, UPDATE, or DELETE for the public role.
+-- (Admin reads/writes go through serverless functions using the service_role key,
+--  which bypasses RLS entirely.)
+CREATE POLICY "Allow public insert on bookings" ON bookings
+  FOR INSERT WITH CHECK (true);
+
+
+-- =====================================================================
+-- 7. Enable RLS on services table
+-- =====================================================================
+ALTER TABLE services ENABLE ROW LEVEL SECURITY;
+
+-- Allow anonymous/public users to read (SELECT) services.
+-- No INSERT, UPDATE, or DELETE for the public role.
+CREATE POLICY "Allow public read access on services" ON services
+  FOR SELECT USING (true);
