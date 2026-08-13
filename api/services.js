@@ -81,10 +81,17 @@ module.exports = async (req, res) => {
 
   try {
     if (req.method === 'GET') {
-      // Query all non-archived services ordered by display_order asc
+      const authHeader = req.headers.authorization || '';
+      const token = authHeader.replace('Bearer ', '').trim();
+      const isAdmin = verifyToken(token);
+
+      const path = isAdmin 
+        ? '/rest/v1/services?order=display_order.asc'
+        : '/rest/v1/services?is_archived=eq.false&order=display_order.asc';
+
       const result = await supabaseRequest({
         method: 'GET',
-        path: '/rest/v1/services?is_archived=eq.false&order=display_order.asc',
+        path,
         useServiceRole: false
       });
 
