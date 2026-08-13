@@ -1,6 +1,17 @@
 const https = require('https');
 const { verifyToken } = require('./_auth');
 
+function isValidHttpUrl(string) {
+  if (!string) return false;
+  try {
+    const url = new URL(string);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch (_) {
+    return false;  
+  }
+}
+
+
 // Helper to make HTTPS requests to Supabase REST endpoint
 function supabaseRequest({ method, path, body, useServiceRole }) {
   const supabaseUrl = process.env.SUPABASE_URL;
@@ -101,6 +112,14 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: 'Invalid request: missing required fields' });
       }
 
+      if (!isValidHttpUrl(payload.url)) {
+        return res.status(400).json({ error: 'Live Link URL must be a valid absolute HTTP or HTTPS address' });
+      }
+
+      if (payload.thumbnail_url && !isValidHttpUrl(payload.thumbnail_url)) {
+        return res.status(400).json({ error: 'Thumbnail URL must be a valid absolute HTTP or HTTPS address' });
+      }
+
       const result = await supabaseRequest({
         method: 'POST',
         path: '/rest/v1/portfolio',
@@ -122,6 +141,14 @@ module.exports = async (req, res) => {
 
       if (!id) {
         return res.status(400).json({ error: 'Missing portfolio record identification' });
+      }
+
+      if (payload.url && !isValidHttpUrl(payload.url)) {
+        return res.status(400).json({ error: 'Live Link URL must be a valid absolute HTTP or HTTPS address' });
+      }
+
+      if (payload.thumbnail_url && !isValidHttpUrl(payload.thumbnail_url)) {
+        return res.status(400).json({ error: 'Thumbnail URL must be a valid absolute HTTP or HTTPS address' });
       }
 
       // We use PATCH for updates in PostgREST
