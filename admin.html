@@ -1188,7 +1188,7 @@
       }
     });
 
-    // Form submission — dual mode
+    // Form submission
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       loginError.style.display = 'none';
@@ -1196,41 +1196,27 @@
       const email = emailInput.value.trim();
       const password = passwordInput.value;
 
-      if (IS_LOCAL) {
-        // ── LOCAL MODE: validate against js/config.js credentials ──
-        if (email === LOCAL_CFG.ADMIN_EMAIL && password === LOCAL_CFG.ADMIN_PASSWORD) {
+      try {
+        const res = await fetch('/api/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (!res.ok) throw new Error('Authentication failed');
+
+        const data = await res.json();
+        if (data.success && data.token) {
           sessionStorage.setItem('gng_admin_authenticated', 'true');
           sessionStorage.setItem('gng_admin_email', email);
-          sessionStorage.setItem('gng_admin_token', 'local-session');
+          sessionStorage.setItem('gng_admin_token', data.token);
           showDashboard(email);
         } else {
-          loginError.style.display = 'block';
-          passwordInput.value = '';
+          throw new Error('Invalid authentication response');
         }
-      } else {
-        // ── DEPLOYED MODE: authenticate via serverless API ──
-        try {
-          const res = await fetch('/api/admin-login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-          });
-
-          if (!res.ok) throw new Error('Authentication failed');
-
-          const data = await res.json();
-          if (data.success && data.token) {
-            sessionStorage.setItem('gng_admin_authenticated', 'true');
-            sessionStorage.setItem('gng_admin_email', email);
-            sessionStorage.setItem('gng_admin_token', data.token);
-            showDashboard(email);
-          } else {
-            throw new Error('Invalid authentication response');
-          }
-        } catch (err) {
-          loginError.style.display = 'block';
-          passwordInput.value = '';
-        }
+      } catch (err) {
+        loginError.style.display = 'block';
+        passwordInput.value = '';
       }
     });
 
@@ -1251,7 +1237,7 @@
       fetchPortfolio();
     }
 
-    // Fetch Bookings — dual mode
+    // Fetch Bookings
     async function fetchBookings() {
       bookingsContainer.innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem; background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 12px;">
@@ -1260,29 +1246,15 @@
       `;
 
       try {
-        let response;
-
-        if (IS_LOCAL) {
-          // ── LOCAL MODE: query Supabase REST directly ──
-          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/bookings?select=*&order=created_at.desc`, {
-            method: 'GET',
-            headers: {
-              'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_ANON_KEY}`
-            }
-          });
-        } else {
-          // ── DEPLOYED MODE: query serverless API ──
-          const token = sessionStorage.getItem('gng_admin_token');
-          if (!token) {
-            bookingsContainer.innerHTML = `<div style="grid-column: 1 / -1; text-align:center;color:var(--accent-secondary);padding:3rem;background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 12px;">Session expired. Please log in again.</div>`;
-            return;
-          }
-          response = await fetch(`/api/get-bookings`, {
-            method: 'GET',
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
+        const token = sessionStorage.getItem('gng_admin_token');
+        if (!token) {
+          bookingsContainer.innerHTML = `<div style="grid-column: 1 / -1; text-align:center;color:var(--accent-secondary);padding:3rem;background: rgba(255,255,255,0.01); border: 1px solid var(--border-color); border-radius: 12px;">Session expired. Please log in again.</div>`;
+          return;
         }
+        const response = await fetch(`/api/get-bookings`, {
+          method: 'GET',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
@@ -1300,36 +1272,22 @@
       }
     }
 
-    // Delete record logic — dual mode
+    // Delete record logic
     async function deleteBooking(id) {
       if (!confirm('Are you sure you want to permanently delete this lead record? This action cannot be undone.')) {
         return;
       }
 
       try {
-        let response;
-
-        if (IS_LOCAL) {
-          // ── LOCAL MODE: delete via Supabase REST directly ──
-          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/bookings?id=eq.${id}`, {
-            method: 'DELETE',
-            headers: {
-              'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_ANON_KEY}`
-            }
-          });
-        } else {
-          // ── DEPLOYED MODE: delete via serverless API ──
-          const token = sessionStorage.getItem('gng_admin_token');
-          if (!token) {
-            alert('Your session has expired. Please log in again.');
-            return;
-          }
-          response = await fetch(`/api/delete-booking?id=${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
+        const token = sessionStorage.getItem('gng_admin_token');
+        if (!token) {
+          alert('Your session has expired. Please log in again.');
+          return;
         }
+        const response = await fetch(`/api/delete-booking?id=${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
 
         if (!response.ok) {
           throw new Error(`DB Delete Error: status code ${response.status}`);
@@ -1497,41 +1455,22 @@
       updateStats(list.length, agentCount, webCount);
     }
 
-    // Update booking status — dual mode
+    // Update booking status
     async function updateBookingStatus(id, newStatus) {
       try {
-        let response;
-
-        if (IS_LOCAL) {
-          // Use service role key for writes if available, otherwise fall back to anon key
-          const writeKey = LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY && !LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY.includes('your_supabase') 
-            ? LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY 
-            : LOCAL_CFG.SUPABASE_ANON_KEY;
-          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/bookings?id=eq.${id}`, {
-            method: 'PATCH',
-            headers: {
-              'apikey': writeKey,
-              'Authorization': `Bearer ${writeKey}`,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=representation'
-            },
-            body: JSON.stringify({ status: newStatus })
-          });
-        } else {
-          const token = sessionStorage.getItem('gng_admin_token');
-          if (!token) {
-            alert('Your session has expired. Please log in again.');
-            return;
-          }
-          response = await fetch(`/api/update-booking-status`, {
-            method: 'PATCH',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id, status: newStatus })
-          });
+        const token = sessionStorage.getItem('gng_admin_token');
+        if (!token) {
+          alert('Your session has expired. Please log in again.');
+          return;
         }
+        const response = await fetch(`/api/update-booking-status`, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id, status: newStatus })
+        });
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
@@ -1552,102 +1491,43 @@
       }
     }
 
-    // Export CSV logic — dual mode
+    // Export CSV logic
     async function exportCSV() {
       const q = searchFilter.value.trim();
       const statusVal = statusFilter.value;
 
       try {
-        if (IS_LOCAL) {
-          // Local mode generates CSV client-side
-          let visibleList = bookingsList;
-          if (statusVal !== 'all') {
-            visibleList = visibleList.filter(b => (b.status || 'pending').toLowerCase() === statusVal.toLowerCase());
-          }
-          if (q) {
-            const searchQ = q.toLowerCase();
-            visibleList = visibleList.filter(b => {
-              return (b.name || '').toLowerCase().includes(searchQ) ||
-                     (b.email || '').toLowerCase().includes(searchQ) ||
-                     (b.phone || '').toLowerCase().includes(searchQ) ||
-                     (b.company_name || '').toLowerCase().includes(searchQ) ||
-                     (b.job_title || '').toLowerCase().includes(searchQ) ||
-                     (b.message || '').toLowerCase().includes(searchQ) ||
-                     (b.service || '').toLowerCase().includes(searchQ);
-            });
-          }
-
-          function escapeCSV(val) {
-            if (val === undefined || val === null) return '';
-            let str = String(val);
-            str = str.replace(/"/g, '""');
-            if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
-              return `"${str}"`;
-            }
-            return str;
-          }
-
-          const headers = ['Booking ID', 'Date', 'Customer Name', 'Email', 'Phone', 'Company', 'Role', 'Service of Interest', 'Message', 'Status'];
-          let csv = headers.join(',') + '\r\n';
-          for (const b of visibleList) {
-            const row = [
-              b.id,
-              b.created_at,
-              b.name,
-              b.email,
-              b.phone || 'N/A',
-              b.company_name || 'N/A',
-              b.job_title || 'N/A',
-              b.service || 'N/A',
-              b.message || '',
-              b.status || 'pending'
-            ];
-            csv += row.map(escapeCSV).join(',') + '\r\n';
-          }
-
-          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.setAttribute('href', url);
-          link.setAttribute('download', `bookings_export_${new Date().toISOString().slice(0, 10)}.csv`);
-          link.style.visibility = 'hidden';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-        } else {
-          // Deployed mode fetches from secure API
-          const token = sessionStorage.getItem('gng_admin_token');
-          if (!token) {
-            alert('Your session has expired. Please log in again.');
-            return;
-          }
-
-          const params = new URLSearchParams();
-          if (q) params.append('search', q);
-          if (statusVal !== 'all') params.append('status', statusVal);
-
-          const response = await fetch(`/api/export-bookings?${params.toString()}`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-
-          if (!response.ok) {
-            const errText = await response.text();
-            throw new Error(errText || `Server returned HTTP ${response.status}`);
-          }
-
-          const blob = await response.blob();
-          const url = URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.setAttribute('href', url);
-          link.setAttribute('download', `bookings_export_${new Date().toISOString().slice(0, 10)}.csv`);
-          link.style.visibility = 'hidden';
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+        const token = sessionStorage.getItem('gng_admin_token');
+        if (!token) {
+          alert('Your session has expired. Please log in again.');
+          return;
         }
+
+        const params = new URLSearchParams();
+        if (q) params.append('search', q);
+        if (statusVal !== 'all') params.append('status', statusVal);
+
+        const response = await fetch(`/api/export-bookings?${params.toString()}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(errText || `Server returned HTTP ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', `bookings_export_${new Date().toISOString().slice(0, 10)}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
       } catch (err) {
         alert(`Failed to export CSV: ${err.message}`);
       }
@@ -1740,7 +1620,7 @@
       }
     });
 
-    // ── Services Fetching (Dual-mode) ──
+    // Services Fetching
     async function fetchServices() {
       servicesTbody.innerHTML = `
         <tr>
@@ -1751,22 +1631,13 @@
       `;
 
       try {
-        let response;
-        if (IS_LOCAL) {
-          // Local mode query directly to Supabase REST
-          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/services?order=display_order.asc`, {
-            method: 'GET',
-            headers: {
-              'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_ANON_KEY}`
-            }
-          });
-        } else {
-          // Deployed mode query via serverless API
-          response = await fetch('/api/services', {
-            method: 'GET'
-          });
-        }
+        const token = sessionStorage.getItem('gng_admin_token');
+        const response = await fetch('/api/services', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
@@ -1981,47 +1852,23 @@
       };
 
       try {
-        let response;
-        if (IS_LOCAL) {
-          // Direct Supabase Rest
-          let url = `${LOCAL_CFG.SUPABASE_URL}/rest/v1/services`;
-          let method = 'POST';
-          
-          if (isEdit) {
-            url += `?id=eq.${id}`;
-            method = 'PATCH';
-          }
+        const token = sessionStorage.getItem('gng_admin_token');
+        let url = '/api/services';
+        let method = 'POST';
 
-          response = await fetch(url, {
-            method,
-            headers: {
-              'apikey': LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY || LOCAL_CFG.SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY || LOCAL_CFG.SUPABASE_ANON_KEY}`,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=representation'
-            },
-            body: JSON.stringify(payload)
-          });
-        } else {
-          // Serverless API routing
-          const token = sessionStorage.getItem('gng_admin_token');
-          let url = '/api/services';
-          let method = 'POST';
-
-          if (isEdit) {
-            url += `?id=${id}`;
-            method = 'PUT';
-          }
-
-          response = await fetch(url, {
-            method,
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-          });
+        if (isEdit) {
+          url += `?id=${id}`;
+          method = 'PUT';
         }
+
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
 
         if (!response.ok) {
           const errText = await response.text();
@@ -2042,24 +1889,13 @@
       }
 
       try {
-        let response;
-        if (IS_LOCAL) {
-          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/services?id=eq.${id}`, {
-            method: 'DELETE',
-            headers: {
-              'apikey': LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY || LOCAL_CFG.SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY || LOCAL_CFG.SUPABASE_ANON_KEY}`
-            }
-          });
-        } else {
-          const token = sessionStorage.getItem('gng_admin_token');
-          response = await fetch(`/api/services?id=${id}`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-        }
+        const token = sessionStorage.getItem('gng_admin_token');
+        const response = await fetch(`/api/services?id=${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
 
         if (!response.ok) {
           throw new Error(`DB Delete Error: status code ${response.status}`);
@@ -2082,18 +1918,7 @@
       `;
 
       try {
-        let response;
-        if (IS_LOCAL) {
-          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/portfolio?order=display_order.asc`, {
-            method: 'GET',
-            headers: {
-              'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_ANON_KEY}`
-            }
-          });
-        } else {
-          response = await fetch('/api/portfolio', { method: 'GET' });
-        }
+        const response = await fetch('/api/portfolio', { method: 'GET' });
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
@@ -2270,45 +2095,23 @@
       };
 
       try {
-        let response;
-        if (IS_LOCAL) {
-          let url = `${LOCAL_CFG.SUPABASE_URL}/rest/v1/portfolio`;
-          let method = 'POST';
-          
-          if (isEdit) {
-            url += `?id=eq.${id}`;
-            method = 'PATCH';
-          }
+        const token = sessionStorage.getItem('gng_admin_token');
+        let url = '/api/portfolio';
+        let method = 'POST';
 
-          response = await fetch(url, {
-            method,
-            headers: {
-              'apikey': LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY || LOCAL_CFG.SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY || LOCAL_CFG.SUPABASE_ANON_KEY}`,
-              'Content-Type': 'application/json',
-              'Prefer': 'return=representation'
-            },
-            body: JSON.stringify(payload)
-          });
-        } else {
-          const token = sessionStorage.getItem('gng_admin_token');
-          let url = '/api/portfolio';
-          let method = 'POST';
-
-          if (isEdit) {
-            url += `?id=${id}`;
-            method = 'PUT';
-          }
-
-          response = await fetch(url, {
-            method,
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-          });
+        if (isEdit) {
+          url += `?id=${id}`;
+          method = 'PUT';
         }
+
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
 
         if (!response.ok) {
           const errText = await response.text();
@@ -2329,24 +2132,13 @@
       }
 
       try {
-        let response;
-        if (IS_LOCAL) {
-          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/portfolio?id=eq.${id}`, {
-            method: 'DELETE',
-            headers: {
-              'apikey': LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY || LOCAL_CFG.SUPABASE_ANON_KEY,
-              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_SERVICE_ROLE_KEY || LOCAL_CFG.SUPABASE_ANON_KEY}`
-            }
-          });
-        } else {
-          const token = sessionStorage.getItem('gng_admin_token');
-          response = await fetch(`/api/portfolio?id=${id}`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          });
-        }
+        const token = sessionStorage.getItem('gng_admin_token');
+        const response = await fetch(`/api/portfolio?id=${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
 
         if (!response.ok) {
           throw new Error(`DB Delete Error: status code ${response.status}`);
