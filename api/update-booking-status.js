@@ -67,7 +67,8 @@ module.exports = async (req, res) => {
       } else {
         console.error('Supabase PATCH failed:', response.statusCode, data);
         return res.status(500).json({ 
-          error: 'Failed to update record in database'
+          error: 'Failed to update record in database',
+          detail: data 
         });
       }
     });
