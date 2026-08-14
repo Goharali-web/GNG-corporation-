@@ -291,11 +291,16 @@
         || location.hostname === '127.0.0.1';
       const LOCAL_CFG = window.GNG_CONFIG || {};
 
+      console.log('[GNG Packages] IS_LOCAL:', IS_LOCAL, '| protocol:', location.protocol, '| hostname:', location.hostname);
+      console.log('[GNG Packages] GNG_CONFIG available:', !!window.GNG_CONFIG);
+
       // 1. Fetch & Render Services
       try {
         let response;
         if (IS_LOCAL) {
-          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/services?category=eq.web_package&is_archived=eq.false&order=display_order.asc`, {
+          const fetchUrl = `${LOCAL_CFG.SUPABASE_URL}/rest/v1/services?category=eq.web_package&is_archived=eq.false&order=display_order.asc`;
+          console.log('[GNG Packages] Fetching services (LOCAL):', fetchUrl);
+          response = await fetch(fetchUrl, {
             method: 'GET',
             headers: {
               'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
@@ -303,21 +308,25 @@
             }
           });
         } else {
+          console.log('[GNG Packages] Fetching services (PRODUCTION): /api/services');
           response = await fetch('/api/services');
         }
 
+        console.log('[GNG Packages] Services response status:', response.status);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         let services = await response.json();
+        console.log('[GNG Packages] Services raw count:', services.length);
         
         // If we fetched the generic api/services, filter by category and archived status
         if (!IS_LOCAL) {
           services = services.filter(s => s.category === 'web_package' && !s.is_archived);
+          console.log('[GNG Packages] Services after filtering (web_package, not archived):', services.length);
         }
 
         renderComparisonTable(services);
       } catch (err) {
-        console.error('Failed to load comparison matrix:', err);
+        console.error('[GNG Packages] Failed to load comparison matrix:', err);
         document.getElementById('comparison-matrix-container').innerHTML = `
           <div style="text-align: center; color: var(--accent-secondary); padding: 3rem;">
             Failed to connect to web package telemetry database. Please reload.
@@ -604,12 +613,15 @@
             }
           });
         } else {
+          console.log('[GNG Packages] Fetching portfolio (PRODUCTION): /api/portfolio');
           response = await fetch('/api/portfolio');
         }
 
+        console.log('[GNG Packages] Portfolio response status:', response.status);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
         const items = await response.json();
+        console.log('[GNG Packages] Portfolio items count:', items.length);
         if (items.length === 0) {
           grid.innerHTML = `
             <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
