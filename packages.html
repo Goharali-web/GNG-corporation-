@@ -194,17 +194,13 @@
     </div>
   </section>
 
-  <!-- COMPARISON TABLE SECTION -->
+  <!-- WEB PACKAGES LIST GRID -->
   <section class="section">
     <div class="container">
-      <div class="section-title-wrapper text-center reveal">
-        <h2 class="section-title">Tracks Comparison Matrix</h2>
-        <p class="section-description">6 Tiers detailed by telemetry depth, graphics layer, turnaround, and pricing.</p>
-      </div>
-
-      <div id="comparison-matrix-container" class="table-responsive reveal">
-        <div style="text-align: center; color: var(--text-muted); padding: 3rem;">
-          Loading comparison matrix telemetry...
+      <div id="packages-grid" class="grid grid-3">
+        <!-- Dynamically populated from Supabase -->
+        <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
+          Loading web package offerings...
         </div>
       </div>
     </div>
@@ -324,267 +320,83 @@
           console.log('[GNG Packages] Services after filtering (web_package, not archived):', services.length);
         }
 
-        renderComparisonTable(services);
+        renderPackagesGrid(services);
       } catch (err) {
-        console.error('[GNG Packages] Failed to load comparison matrix:', err);
-        document.getElementById('comparison-matrix-container').innerHTML = `
-          <div style="text-align: center; color: var(--accent-secondary); padding: 3rem;">
-            Failed to connect to web package telemetry database. Please reload.
-          </div>
-        `;
+        console.error('[GNG Packages] Failed to load web packages list:', err);
+        const grid = document.getElementById('packages-grid');
+        if (grid) {
+          grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; color: var(--accent-secondary); padding: 3rem;">
+              Failed to connect to web engineering telemetry database. Please reload.
+            </div>
+          `;
+        }
       }
 
       // 2. Fetch & Render Portfolio
       fetchAndRenderPortfolio();
     });
 
-    function getTurnaround(svc) {
-      switch (svc.display_order) {
-        case 1: return '2 Weeks';
-        case 2: return '3 Weeks';
-        case 3: return '4 Weeks';
-        case 4: return '3 Weeks';
-        case 5: return '4 Weeks';
-        case 6: return '6 Weeks';
-        default: return '4 Weeks';
-      }
-    }
+    function renderPackagesGrid(services) {
+      const grid = document.getElementById('packages-grid');
+      if (!grid) return;
 
-    function get3DLayer(svc) {
-      if (svc.subcategory !== 'immersive') return '<span class="crossmark">✖ None</span>';
-      
-      let feats = svc.features || [];
-      if (typeof feats === 'string') {
-        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
-      }
-      const f = feats.find(feat => /3D|WebGL|Spline|shader|canvas/i.test(feat));
-      return f ? escapeHtml(f) : '✔ Yes';
-    }
-
-    function getDatabase(svc) {
-      let feats = svc.features || [];
-      if (typeof feats === 'string') {
-        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
-      }
-      const hasDb = /database|db|postgres/i.test(svc.name) || feats.some(feat => /database|db|postgres/i.test(feat));
-      if (!hasDb) return '<span class="crossmark">✖ None</span>';
-      const f = feats.find(feat => /database|db|postgres/i.test(feat));
-      return f ? escapeHtml(f) : 'Supabase PostgreSQL';
-    }
-
-    function getAdmin(svc) {
-      let feats = svc.features || [];
-      if (typeof feats === 'string') {
-        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
-      }
-      const hasAdmin = /admin/i.test(svc.name) || feats.some(feat => /admin|dashboard/i.test(feat));
-      if (!hasAdmin) return '<span class="crossmark">✖ None</span>';
-      const f = feats.find(feat => /admin|dashboard/i.test(feat));
-      return f ? escapeHtml(f) : '✔ Yes';
-    }
-
-    function getWireframes(svc) {
-      let feats = svc.features || [];
-      if (typeof feats === 'string') {
-        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
-      }
-      const f = feats.find(feat => /iteration|wireframe|mockup|design/i.test(feat));
-      if (f) return escapeHtml(f);
-      switch (svc.display_order) {
-        case 1: return '2 Iteration rounds';
-        case 2: return '3 Iteration rounds';
-        case 3: return 'Unlimited Iterations';
-        case 4: return '3 Iteration rounds';
-        case 5: return '4 Iteration rounds';
-        case 6: return 'Unlimited Iterations';
-        default: return '3 Iteration rounds';
-      }
-    }
-
-    function getSEO(svc) {
-      let feats = svc.features || [];
-      if (typeof feats === 'string') {
-        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
-      }
-      const f = feats.find(feat => /seo|meta|search engine/i.test(feat));
-      if (f) return escapeHtml(f);
-      switch (svc.display_order) {
-        case 1: return 'Basic setup';
-        case 6: return 'Custom programmatic schema setup';
-        default: return 'Advanced tags';
-      }
-    }
-
-    function getSLA(svc) {
-      let feats = svc.features || [];
-      if (typeof feats === 'string') {
-        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
-      }
-      const f = feats.find(feat => /sla|support|maintenance/i.test(feat));
-      if (f) return escapeHtml(f);
-      switch (svc.display_order) {
-        case 1: return '30 Days coverage';
-        case 2: return '60 Days coverage';
-        case 3: return '90 Days coverage';
-        case 4: return '60 Days coverage';
-        case 5: return '90 Days coverage';
-        case 6: return '1 Year comprehensive SLA contract';
-        default: return '60 Days coverage';
-      }
-    }
-
-    function getHosting(svc) {
-      let feats = svc.features || [];
-      if (typeof feats === 'string') {
-        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
-      }
-      const f = feats.find(feat => /hosting|vercel|netlify/i.test(feat));
-      if (f) return escapeHtml(f);
-      return svc.display_order === 6 ? '✔ Yes (Multi-region edge routing)' : '✔ Yes';
-    }
-
-    function renderComparisonTable(services) {
-      const container = document.getElementById('comparison-matrix-container');
       if (services.length === 0) {
-        container.innerHTML = `
-          <div style="text-align: center; color: var(--text-muted); padding: 3rem;">
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
             No web packages currently cataloged. Check back soon.
           </div>
         `;
         return;
       }
 
-      // Generate headers
-      let headersHtml = '<th>Feature Specs</th>';
-      services.forEach(svc => {
-        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
-        const thClass = isRec ? 'class="highlight" style="border-top: 2px solid var(--accent-color);"' : '';
-        const subcategory = svc.subcategory || 'standard';
-        const badgeClass = subcategory === 'standard' ? 'badge-standard' : 'badge-immersive';
-        const badgeText = subcategory === 'standard' ? 'Standard' : 'Immersive';
-        
-        const badgeMarkup = isRec 
-          ? `<div class="track-badge badge-immersive" style="background-color: var(--accent-color); color: #fff;">RECOMMENDED</div>`
-          : `<div class="track-badge ${badgeClass}">${badgeText}</div>`;
-          
-        const priceStyle = isRec ? 'style="color: var(--accent-secondary);"' : '';
-        const turnaround = getTurnaround(svc);
+      grid.innerHTML = '';
+      services.forEach((svc, index) => {
+        // Build dynamic styles for colors
+        const baseColor = svc.color || '#3b82f6';
+        const bgOpacity1 = baseColor + '1a'; // 10% opacity hex
+        const bgOpacity2 = baseColor + '33'; // 20% opacity hex
 
-        headersHtml += `
-          <th ${thClass}>
-            ${badgeMarkup}
-            <div>${escapeHtml(svc.name)}</div>
-            <div class="tier-price" ${priceStyle}>${escapeHtml(svc.price)}</div>
-            <div class="tier-turnaround">${turnaround}</div>
-          </th>
+        const delayClass = `delay-${((index % 3) + 1) * 100}`;
+        const card = document.createElement('div');
+        card.className = `card reveal ${delayClass}`;
+
+        const rawIcon = svc.icon || '';
+        const iconMarkup = rawIcon.trim().startsWith('<svg')
+          ? rawIcon
+          : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              ${rawIcon || '<rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/>'}
+            </svg>`;
+
+        card.innerHTML = `
+          <div class="card-icon-wrapper" style="background-color: ${bgOpacity1}; border-color: ${bgOpacity2}; color: ${baseColor};">
+            ${iconMarkup}
+          </div>
+          <h3 class="card-title">${escapeHtml(svc.name)}</h3>
+          <p class="card-description">
+            ${escapeHtml(svc.description)}
+          </p>
+          <div style="margin-bottom: 1.5rem;">
+            <span style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">PRICING STARTS AT</span>
+            <div style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary);">${escapeHtml(svc.price)}</div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <a href="${escapeHtml(svc.detail_url || '#')}" class="btn-link">
+              View Features
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+            <a href="contact.html?service=${encodeURIComponent(svc.name)}" class="btn btn-secondary btn-sm">Get Started</a>
+          </div>
         `;
+        grid.appendChild(card);
       });
 
-      // Generate Use Case Focus row
-      let useCaseHtml = '<td>Use Case Focus</td>';
-      services.forEach(svc => {
-        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
-        useCaseHtml += `<td ${isRec ? 'class="highlight"' : ''}>${escapeHtml(svc.description)}</td>`;
-      });
-
-      // Generate 3D Layer row
-      let graphicsHtml = '<td>3D graphics layer</td>';
-      services.forEach(svc => {
-        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
-        const tdClass = isRec ? 'class="highlight"' : '';
-        const tdStyle = isRec && svc.subcategory === 'immersive' ? 'style="font-weight: bold; color: var(--accent-secondary);"' : '';
-        graphicsHtml += `<td ${tdClass} ${tdStyle}>${get3DLayer(svc)}</td>`;
-      });
-
-      // Generate DB row
-      let dbHtml = '<td>Database infrastructure</td>';
-      services.forEach(svc => {
-        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
-        const tdClass = isRec ? 'class="highlight"' : '';
-        dbHtml += `<td ${tdClass}>${getDatabase(svc)}</td>`;
-      });
-
-      // Generate Admin Panel row
-      let adminHtml = '<td>Admin panel features</td>';
-      services.forEach(svc => {
-        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
-        const tdClass = isRec ? 'class="highlight"' : '';
-        const tdStyle = isRec ? 'style="font-weight: bold; color: var(--accent-secondary);"' : '';
-        adminHtml += `<td ${tdClass} ${tdStyle}>${getAdmin(svc)}</td>`;
-      });
-
-      // Generate Wireframes row
-      let wireframesHtml = '<td>Custom wireframes/mockups</td>';
-      services.forEach(svc => {
-        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
-        wireframesHtml += `<td ${isRec ? 'class="highlight"' : ''}>${getWireframes(svc)}</td>`;
-      });
-
-      // Generate SEO row
-      let seoHtml = '<td>SEO Optimization meta tags</td>';
-      services.forEach(svc => {
-        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
-        seoHtml += `<td ${isRec ? 'class="highlight"' : ''}>${getSEO(svc)}</td>`;
-      });
-
-      // Generate SLA Support row
-      let slaHtml = '<td>Post-launch SLA Support</td>';
-      services.forEach(svc => {
-        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
-        slaHtml += `<td ${isRec ? 'class="highlight"' : ''}>${getSLA(svc)}</td>`;
-      });
-
-      // Generate Hosting row
-      let hostingHtml = '<td>Hosting setup (Vercel/Netlify)</td>';
-      services.forEach(svc => {
-        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
-        hostingHtml += `<td ${isRec ? 'class="highlight"' : ''}>${getHosting(svc)}</td>`;
-      });
-
-      // Generate SSL row
-      let sslHtml = '<td>SSL Certificate & DNS linking</td>';
-      services.forEach(svc => {
-        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
-        sslHtml += `<td ${isRec ? 'class="highlight"' : ''}>✔ Yes</td>`;
-      });
-
-      // Generate Buttons row
-      let buttonsHtml = '<td>Get Started</td>';
-      services.forEach(svc => {
-        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
-        const tdClass = isRec ? 'class="highlight"' : '';
-        const btnClass = isRec ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
-        const btnStyle = isRec ? 'style="box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);"' : '';
-        const btnText = 'Get Started';
-        const serviceParam = svc.subcategory === 'immersive' ? 'immersive-web' : 'standard-web';
-
-        buttonsHtml += `
-          <td ${tdClass}>
-            <a href="contact.html?service=${serviceParam}&tier=${encodeURIComponent(svc.name)}" class="${btnClass}" ${btnStyle}>${btnText}</a>
-          </td>
-        `;
-      });
-
-      // Assemble full table
-      container.innerHTML = `
-        <table class="comparison-table">
-          <thead>
-            <tr>${headersHtml}</tr>
-          </thead>
-          <tbody>
-            <tr>${useCaseHtml}</tr>
-            <tr>${graphicsHtml}</tr>
-            <tr>${dbHtml}</tr>
-            <tr>${adminHtml}</tr>
-            <tr>${wireframesHtml}</tr>
-            <tr>${seoHtml}</tr>
-            <tr>${slaHtml}</tr>
-            <tr>${hostingHtml}</tr>
-            <tr>${sslHtml}</tr>
-            <tr style="background-color: rgba(255,255,255,0.01);">${buttonsHtml}</tr>
-          </tbody>
-        </table>
-      `;
+      if (typeof window.initScrollAnimations === 'function') {
+        window.initScrollAnimations();
+      }
     }
 
     async function fetchAndRenderPortfolio() {
