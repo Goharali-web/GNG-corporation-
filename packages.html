@@ -29,6 +29,120 @@
       color: var(--accent-color);
       border: 1px solid rgba(99, 102, 241, 0.2);
     }
+
+    /* Portfolio showcase styling */
+    .portfolio-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    
+    .portfolio-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5), 0 0 25px rgba(99, 102, 241, 0.1);
+    }
+    
+    .portfolio-thumb-wrapper {
+      position: relative;
+      width: 100%;
+      height: 200px;
+      background: radial-gradient(circle at center, #1b1a29 0%, #08080a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .portfolio-thumb-wrapper::before {
+      content: '';
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      background-color: var(--accent-color);
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.15;
+    }
+    
+    .portfolio-thumb-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .portfolio-card:hover .portfolio-thumb-img {
+      transform: scale(1.06);
+    }
+    
+    .portfolio-card-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    
+    .portfolio-card-tier {
+      display: inline-block;
+      align-self: flex-start;
+      padding: 0.2rem 0.6rem;
+      border-radius: 100px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+    
+    .tier-badge-standard {
+      background-color: rgba(255,255,255,0.05);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+    
+    .tier-badge-immersive {
+      background-color: rgba(99, 102, 241, 0.1);
+      color: var(--accent-color);
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+    
+    .portfolio-card-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .portfolio-card-desc {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      flex: 1;
+    }
+    
+    .portfolio-card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--accent-secondary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+      text-decoration: none;
+    }
+    
+    .portfolio-card-link:hover {
+      color: #60a5fa;
+    }
   </style>
 </head>
 <body>
@@ -47,7 +161,7 @@
           <li><a href="contact.html" class="nav-link">Contact</a></li>
         </ul>
       </nav>
-      <a href="contact.html" class="btn btn-primary btn-sm nav-cta">Book a Demo</a>
+      <a href="contact.html" class="btn btn-primary btn-sm nav-cta">Get Started</a>
       <button class="menu-toggle" aria-label="Toggle Navigation">
         <span></span>
         <span></span>
@@ -66,7 +180,7 @@
       <li><a href="about.html" class="mobile-nav-link">About</a></li>
       <li><a href="contact.html" class="mobile-nav-link">Contact</a></li>
     </ul>
-    <a href="contact.html" class="btn btn-primary btn-lg" style="margin-top: 1.5rem;">Book a Demo</a>
+    <a href="contact.html" class="btn btn-primary btn-lg" style="margin-top: 1.5rem;">Get Started</a>
   </div>
 
   <!-- HEADER HERO -->
@@ -88,157 +202,27 @@
         <p class="section-description">6 Tiers detailed by telemetry depth, graphics layer, turnaround, and pricing.</p>
       </div>
 
-      <div class="table-responsive reveal">
-        <table class="comparison-table">
-          <thead>
-            <tr>
-              <th>Feature Specs</th>
-              <!-- Tiers 1-3: Standard Track -->
-              <th>
-                <div class="track-badge badge-standard">Standard</div>
-                <div>Standard Starter</div>
-                <div class="tier-price">$1,499</div>
-                <div class="tier-turnaround">2 Weeks</div>
-              </th>
-              <th>
-                <div class="track-badge badge-standard">Standard</div>
-                <div>Standard + DB</div>
-                <div class="tier-price">$2,499</div>
-                <div class="tier-turnaround">3 Weeks</div>
-              </th>
-              <th>
-                <div class="track-badge badge-standard">Standard</div>
-                <div>Standard + DB + Admin</div>
-                <div class="tier-price">$3,999</div>
-                <div class="tier-turnaround">4 Weeks</div>
-              </th>
-              <!-- Tiers 4-6: Immersive Track -->
-              <th>
-                <div class="track-badge badge-immersive">Immersive</div>
-                <div>3D Starter</div>
-                <div class="tier-price">$4,499</div>
-                <div class="tier-turnaround">3 Weeks</div>
-              </th>
-              <th>
-                <div class="track-badge badge-immersive">Immersive</div>
-                <div>3D + DB</div>
-                <div class="tier-price">$5,999</div>
-                <div class="tier-turnaround">4 Weeks</div>
-              </th>
-              <th class="highlight" style="border-top: 2px solid var(--accent-color);">
-                <div class="track-badge badge-immersive" style="background-color: var(--accent-color); color: #fff;">RECOMMENDED</div>
-                <div>3D + DB + Admin</div>
-                <div class="tier-price" style="color: var(--accent-secondary);">$8,999</div>
-                <div class="tier-turnaround">6 Weeks</div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Use Case Focus</td>
-              <td>Marketing & informational showcase</td>
-              <td>Lead capture with database lists</td>
-              <td>Client accounts & operational portal</td>
-              <td>Product showcases & creative portfolios</td>
-              <td>Interactive stores with user accounts</td>
-              <td class="highlight">State-of-the-art interactive SaaS platforms</td>
-            </tr>
-            <tr>
-              <td>3D graphics layer</td>
-              <td class="crossmark">✖ None</td>
-              <td class="crossmark">✖ None</td>
-              <td class="crossmark">✖ None</td>
-              <td>Basic Spline integration</td>
-              <td>Interactive Spline / Three.js scene</td>
-              <td class="highlight" style="font-weight: bold; color: var(--accent-secondary);">Custom shaders & custom WebGL scripts</td>
-            </tr>
-            <tr>
-              <td>Database infrastructure</td>
-              <td class="crossmark">✖ None</td>
-              <td>Supabase PostgreSQL</td>
-              <td>Supabase PostgreSQL</td>
-              <td class="crossmark">✖ None</td>
-              <td>Supabase PostgreSQL</td>
-              <td class="highlight">Supabase PostgreSQL (Multi-node replication)</td>
-            </tr>
-            <tr>
-              <td>Admin panel features</td>
-              <td class="crossmark">✖ None</td>
-              <td class="crossmark">✖ None</td>
-              <td>Client CRUD & basic data graphs</td>
-              <td class="crossmark">✖ None</td>
-              <td class="crossmark">✖ None</td>
-              <td class="highlight" style="font-weight: bold; color: var(--accent-secondary);">Interactive analytics, system state controls & logs</td>
-            </tr>
-            <tr>
-              <td>Custom wireframes/mockups</td>
-              <td>2 Iteration rounds</td>
-              <td>3 Iteration rounds</td>
-              <td>Unlimited Iterations</td>
-              <td>3 Iteration rounds</td>
-              <td>4 Iteration rounds</td>
-              <td class="highlight">Unlimited Iterations</td>
-            </tr>
-            <tr>
-              <td>SEO Optimization meta tags</td>
-              <td>Basic setup</td>
-              <td>Advanced tags</td>
-              <td>Advanced tags</td>
-              <td>Advanced tags</td>
-              <td>Advanced tags</td>
-              <td class="highlight">Custom programmatic schema setup</td>
-            </tr>
-            <tr>
-              <td>Post-launch SLA Support</td>
-              <td>30 Days coverage</td>
-              <td>60 Days coverage</td>
-              <td>90 Days coverage</td>
-              <td>60 Days coverage</td>
-              <td>90 Days coverage</td>
-              <td class="highlight">1 Year comprehensive SLA contract</td>
-            </tr>
-            <tr>
-              <td>Hosting setup (Vercel/Netlify)</td>
-              <td class="checkmark">✔ Yes</td>
-              <td class="checkmark">✔ Yes</td>
-              <td class="checkmark">✔ Yes</td>
-              <td class="checkmark">✔ Yes</td>
-              <td class="checkmark">✔ Yes</td>
-              <td class="highlight">✔ Yes (Multi-region edge routing)</td>
-            </tr>
-            <tr>
-              <td>SSL Certificate & DNS linking</td>
-              <td class="checkmark">✔ Yes</td>
-              <td class="checkmark">✔ Yes</td>
-              <td class="checkmark">✔ Yes</td>
-              <td class="checkmark">✔ Yes</td>
-              <td class="checkmark">✔ Yes</td>
-              <td class="highlight">✔ Yes</td>
-            </tr>
-            <!-- Action buttons footer row -->
-            <tr style="background-color: rgba(255,255,255,0.01);">
-              <td>Get Started</td>
-              <td>
-                <a href="contact.html?service=standard-web" class="btn btn-secondary btn-sm">Select Starter</a>
-              </td>
-              <td>
-                <a href="contact.html?service=standard-web" class="btn btn-secondary btn-sm">Select DB</a>
-              </td>
-              <td>
-                <a href="contact.html?service=standard-web" class="btn btn-secondary btn-sm">Select Admin</a>
-              </td>
-              <td>
-                <a href="contact.html?service=immersive-web" class="btn btn-secondary btn-sm">Select 3D</a>
-              </td>
-              <td>
-                <a href="contact.html?service=immersive-web" class="btn btn-secondary btn-sm">Select 3D DB</a>
-              </td>
-              <td class="highlight">
-                <a href="contact.html?service=immersive-web" class="btn btn-primary btn-sm" style="box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);">Book Tier Design</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div id="comparison-matrix-container" class="table-responsive reveal">
+        <div style="text-align: center; color: var(--text-muted); padding: 3rem;">
+          Loading comparison matrix telemetry...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WEBSITES WE'VE BUILT SECTION -->
+  <section class="section section-secondary" style="border-top: 1px solid var(--border-color);">
+    <div class="container">
+      <div class="section-title-wrapper text-center reveal">
+        <span class="section-subtitle">OUR WORK</span>
+        <h2 class="section-title">Websites We've Built</h2>
+        <p class="section-description">Explore our showcase of deployed sites across Standard and 3D Immersive tracks.</p>
+      </div>
+
+      <div id="portfolio-grid" class="grid grid-3 reveal">
+        <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
+          Loading showcase applications...
+        </div>
       </div>
     </div>
   </section>
@@ -299,5 +283,397 @@
 
   <script src="js/main.js"></script>
   <script src="js/animations.js"></script>
+  <script src="js/config.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const IS_LOCAL = location.protocol === 'file:' 
+        || location.hostname === 'localhost' 
+        || location.hostname === '127.0.0.1';
+      const LOCAL_CFG = window.GNG_CONFIG || {};
+
+      // 1. Fetch & Render Services
+      try {
+        let response;
+        if (IS_LOCAL) {
+          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/services?category=eq.web_package&is_archived=eq.false&order=display_order.asc`, {
+            method: 'GET',
+            headers: {
+              'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_ANON_KEY}`
+            }
+          });
+        } else {
+          response = await fetch('/api/services');
+        }
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        let services = await response.json();
+        
+        // If we fetched the generic api/services, filter by category and archived status
+        if (!IS_LOCAL) {
+          services = services.filter(s => s.category === 'web_package' && !s.is_archived);
+        }
+
+        renderComparisonTable(services);
+      } catch (err) {
+        console.error('Failed to load comparison matrix:', err);
+        document.getElementById('comparison-matrix-container').innerHTML = `
+          <div style="text-align: center; color: var(--accent-secondary); padding: 3rem;">
+            Failed to connect to web package telemetry database. Please reload.
+          </div>
+        `;
+      }
+
+      // 2. Fetch & Render Portfolio
+      fetchAndRenderPortfolio();
+    });
+
+    function getTurnaround(svc) {
+      switch (svc.display_order) {
+        case 1: return '2 Weeks';
+        case 2: return '3 Weeks';
+        case 3: return '4 Weeks';
+        case 4: return '3 Weeks';
+        case 5: return '4 Weeks';
+        case 6: return '6 Weeks';
+        default: return '4 Weeks';
+      }
+    }
+
+    function get3DLayer(svc) {
+      if (svc.subcategory !== 'immersive') return '<span class="crossmark">✖ None</span>';
+      
+      let feats = svc.features || [];
+      if (typeof feats === 'string') {
+        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
+      }
+      const f = feats.find(feat => /3D|WebGL|Spline|shader|canvas/i.test(feat));
+      return f ? escapeHtml(f) : '✔ Yes';
+    }
+
+    function getDatabase(svc) {
+      let feats = svc.features || [];
+      if (typeof feats === 'string') {
+        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
+      }
+      const hasDb = /database|db|postgres/i.test(svc.name) || feats.some(feat => /database|db|postgres/i.test(feat));
+      if (!hasDb) return '<span class="crossmark">✖ None</span>';
+      const f = feats.find(feat => /database|db|postgres/i.test(feat));
+      return f ? escapeHtml(f) : 'Supabase PostgreSQL';
+    }
+
+    function getAdmin(svc) {
+      let feats = svc.features || [];
+      if (typeof feats === 'string') {
+        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
+      }
+      const hasAdmin = /admin/i.test(svc.name) || feats.some(feat => /admin|dashboard/i.test(feat));
+      if (!hasAdmin) return '<span class="crossmark">✖ None</span>';
+      const f = feats.find(feat => /admin|dashboard/i.test(feat));
+      return f ? escapeHtml(f) : '✔ Yes';
+    }
+
+    function getWireframes(svc) {
+      let feats = svc.features || [];
+      if (typeof feats === 'string') {
+        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
+      }
+      const f = feats.find(feat => /iteration|wireframe|mockup|design/i.test(feat));
+      if (f) return escapeHtml(f);
+      switch (svc.display_order) {
+        case 1: return '2 Iteration rounds';
+        case 2: return '3 Iteration rounds';
+        case 3: return 'Unlimited Iterations';
+        case 4: return '3 Iteration rounds';
+        case 5: return '4 Iteration rounds';
+        case 6: return 'Unlimited Iterations';
+        default: return '3 Iteration rounds';
+      }
+    }
+
+    function getSEO(svc) {
+      let feats = svc.features || [];
+      if (typeof feats === 'string') {
+        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
+      }
+      const f = feats.find(feat => /seo|meta|search engine/i.test(feat));
+      if (f) return escapeHtml(f);
+      switch (svc.display_order) {
+        case 1: return 'Basic setup';
+        case 6: return 'Custom programmatic schema setup';
+        default: return 'Advanced tags';
+      }
+    }
+
+    function getSLA(svc) {
+      let feats = svc.features || [];
+      if (typeof feats === 'string') {
+        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
+      }
+      const f = feats.find(feat => /sla|support|maintenance/i.test(feat));
+      if (f) return escapeHtml(f);
+      switch (svc.display_order) {
+        case 1: return '30 Days coverage';
+        case 2: return '60 Days coverage';
+        case 3: return '90 Days coverage';
+        case 4: return '60 Days coverage';
+        case 5: return '90 Days coverage';
+        case 6: return '1 Year comprehensive SLA contract';
+        default: return '60 Days coverage';
+      }
+    }
+
+    function getHosting(svc) {
+      let feats = svc.features || [];
+      if (typeof feats === 'string') {
+        try { feats = JSON.parse(feats); } catch(e) { feats = []; }
+      }
+      const f = feats.find(feat => /hosting|vercel|netlify/i.test(feat));
+      if (f) return escapeHtml(f);
+      return svc.display_order === 6 ? '✔ Yes (Multi-region edge routing)' : '✔ Yes';
+    }
+
+    function renderComparisonTable(services) {
+      const container = document.getElementById('comparison-matrix-container');
+      if (services.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; color: var(--text-muted); padding: 3rem;">
+            No web packages currently cataloged. Check back soon.
+          </div>
+        `;
+        return;
+      }
+
+      // Generate headers
+      let headersHtml = '<th>Feature Specs</th>';
+      services.forEach(svc => {
+        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
+        const thClass = isRec ? 'class="highlight" style="border-top: 2px solid var(--accent-color);"' : '';
+        const subcategory = svc.subcategory || 'standard';
+        const badgeClass = subcategory === 'standard' ? 'badge-standard' : 'badge-immersive';
+        const badgeText = subcategory === 'standard' ? 'Standard' : 'Immersive';
+        
+        const badgeMarkup = isRec 
+          ? `<div class="track-badge badge-immersive" style="background-color: var(--accent-color); color: #fff;">RECOMMENDED</div>`
+          : `<div class="track-badge ${badgeClass}">${badgeText}</div>`;
+          
+        const priceStyle = isRec ? 'style="color: var(--accent-secondary);"' : '';
+        const turnaround = getTurnaround(svc);
+
+        headersHtml += `
+          <th ${thClass}>
+            ${badgeMarkup}
+            <div>${escapeHtml(svc.name)}</div>
+            <div class="tier-price" ${priceStyle}>${escapeHtml(svc.price)}</div>
+            <div class="tier-turnaround">${turnaround}</div>
+          </th>
+        `;
+      });
+
+      // Generate Use Case Focus row
+      let useCaseHtml = '<td>Use Case Focus</td>';
+      services.forEach(svc => {
+        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
+        useCaseHtml += `<td ${isRec ? 'class="highlight"' : ''}>${escapeHtml(svc.description)}</td>`;
+      });
+
+      // Generate 3D Layer row
+      let graphicsHtml = '<td>3D graphics layer</td>';
+      services.forEach(svc => {
+        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
+        const tdClass = isRec ? 'class="highlight"' : '';
+        const tdStyle = isRec && svc.subcategory === 'immersive' ? 'style="font-weight: bold; color: var(--accent-secondary);"' : '';
+        graphicsHtml += `<td ${tdClass} ${tdStyle}>${get3DLayer(svc)}</td>`;
+      });
+
+      // Generate DB row
+      let dbHtml = '<td>Database infrastructure</td>';
+      services.forEach(svc => {
+        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
+        const tdClass = isRec ? 'class="highlight"' : '';
+        dbHtml += `<td ${tdClass}>${getDatabase(svc)}</td>`;
+      });
+
+      // Generate Admin Panel row
+      let adminHtml = '<td>Admin panel features</td>';
+      services.forEach(svc => {
+        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
+        const tdClass = isRec ? 'class="highlight"' : '';
+        const tdStyle = isRec ? 'style="font-weight: bold; color: var(--accent-secondary);"' : '';
+        adminHtml += `<td ${tdClass} ${tdStyle}>${getAdmin(svc)}</td>`;
+      });
+
+      // Generate Wireframes row
+      let wireframesHtml = '<td>Custom wireframes/mockups</td>';
+      services.forEach(svc => {
+        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
+        wireframesHtml += `<td ${isRec ? 'class="highlight"' : ''}>${getWireframes(svc)}</td>`;
+      });
+
+      // Generate SEO row
+      let seoHtml = '<td>SEO Optimization meta tags</td>';
+      services.forEach(svc => {
+        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
+        seoHtml += `<td ${isRec ? 'class="highlight"' : ''}>${getSEO(svc)}</td>`;
+      });
+
+      // Generate SLA Support row
+      let slaHtml = '<td>Post-launch SLA Support</td>';
+      services.forEach(svc => {
+        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
+        slaHtml += `<td ${isRec ? 'class="highlight"' : ''}>${getSLA(svc)}</td>`;
+      });
+
+      // Generate Hosting row
+      let hostingHtml = '<td>Hosting setup (Vercel/Netlify)</td>';
+      services.forEach(svc => {
+        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
+        hostingHtml += `<td ${isRec ? 'class="highlight"' : ''}>${getHosting(svc)}</td>`;
+      });
+
+      // Generate SSL row
+      let sslHtml = '<td>SSL Certificate & DNS linking</td>';
+      services.forEach(svc => {
+        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
+        sslHtml += `<td ${isRec ? 'class="highlight"' : ''}>✔ Yes</td>`;
+      });
+
+      // Generate Buttons row
+      let buttonsHtml = '<td>Get Started</td>';
+      services.forEach(svc => {
+        const isRec = svc.display_order === 6 || svc.name.includes('3D + DB + Admin');
+        const tdClass = isRec ? 'class="highlight"' : '';
+        const btnClass = isRec ? 'btn btn-primary btn-sm' : 'btn btn-secondary btn-sm';
+        const btnStyle = isRec ? 'style="box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);"' : '';
+        const btnText = 'Get Started';
+        const serviceParam = svc.subcategory === 'immersive' ? 'immersive-web' : 'standard-web';
+
+        buttonsHtml += `
+          <td ${tdClass}>
+            <a href="contact.html?service=${serviceParam}&tier=${encodeURIComponent(svc.name)}" class="${btnClass}" ${btnStyle}>${btnText}</a>
+          </td>
+        `;
+      });
+
+      // Assemble full table
+      container.innerHTML = `
+        <table class="comparison-table">
+          <thead>
+            <tr>${headersHtml}</tr>
+          </thead>
+          <tbody>
+            <tr>${useCaseHtml}</tr>
+            <tr>${graphicsHtml}</tr>
+            <tr>${dbHtml}</tr>
+            <tr>${adminHtml}</tr>
+            <tr>${wireframesHtml}</tr>
+            <tr>${seoHtml}</tr>
+            <tr>${slaHtml}</tr>
+            <tr>${hostingHtml}</tr>
+            <tr>${sslHtml}</tr>
+            <tr style="background-color: rgba(255,255,255,0.01);">${buttonsHtml}</tr>
+          </tbody>
+        </table>
+      `;
+    }
+
+    async function fetchAndRenderPortfolio() {
+      const grid = document.getElementById('portfolio-grid');
+      const IS_LOCAL = location.protocol === 'file:' 
+        || location.hostname === 'localhost' 
+        || location.hostname === '127.0.0.1';
+      const LOCAL_CFG = window.GNG_CONFIG || {};
+      
+      const defaultSvg = `
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+          <line x1="8" y1="21" x2="16" y2="21"/>
+          <line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+      `;
+
+      try {
+        let response;
+        if (IS_LOCAL) {
+          response = await fetch(`${LOCAL_CFG.SUPABASE_URL}/rest/v1/portfolio?order=display_order.asc`, {
+            method: 'GET',
+            headers: {
+              'apikey': LOCAL_CFG.SUPABASE_ANON_KEY,
+              'Authorization': `Bearer ${LOCAL_CFG.SUPABASE_ANON_KEY}`
+            }
+          });
+        } else {
+          response = await fetch('/api/portfolio');
+        }
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const items = await response.json();
+        if (items.length === 0) {
+          grid.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 3rem;">
+              No portfolio entries currently cataloged. Check back soon.
+            </div>
+          `;
+          return;
+        }
+
+        grid.innerHTML = '';
+        items.forEach((item, index) => {
+          const card = document.createElement('div');
+          const delayClass = `delay-${((index % 3) + 1) * 100}`;
+          card.className = `portfolio-card reveal ${delayClass}`;
+          
+          const tag = item.tier_tag || 'Standard Track';
+          const isImmersive = tag.toLowerCase().includes('3d') || tag.toLowerCase().includes('immersive');
+          const badgeClass = isImmersive ? 'tier-badge-immersive' : 'tier-badge-standard';
+          
+          const thumbMarkup = item.thumbnail_url 
+            ? `<img src="${escapeHtml(item.thumbnail_url)}" alt="${escapeHtml(item.title)}" class="portfolio-thumb-img" loading="lazy">`
+            : defaultSvg;
+
+          card.innerHTML = `
+            <div class="portfolio-thumb-wrapper">
+              ${thumbMarkup}
+            </div>
+            <div class="portfolio-card-content">
+              <span class="portfolio-card-tier ${badgeClass}">${escapeHtml(tag)}</span>
+              <h3 class="portfolio-card-title">${escapeHtml(item.title)}</h3>
+              <p class="portfolio-card-desc">${escapeHtml(item.description)}</p>
+              <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="portfolio-card-link">
+                Visit Site
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="7" y1="17" x2="17" y2="7"></line>
+                  <polyline points="7 7 17 7 17 17"></polyline>
+                </svg>
+              </a>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+        if (typeof window.initScrollAnimations === 'function') {
+          window.initScrollAnimations();
+        }
+      } catch (err) {
+        console.error('Failed to load portfolio items:', err);
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; color: var(--accent-secondary); padding: 3rem;">
+            Failed to connect to portfolio database. Please reload.
+          </div>
+        `;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+    }
+  </script>
 </body>
 </html>
